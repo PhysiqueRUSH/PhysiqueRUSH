@@ -6,58 +6,72 @@
   <title>PhysiqueRUSH</title>
   <link rel="icon" type="image/png" href="icon-192.png" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#0d0d0d" />
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       font-family: "Poppins", Arial, sans-serif;
-      background: radial-gradient(circle at center, #1a0000, #000);
       height: 100vh;
-      color: white;
-      overflow: hidden;
-    }
-
-    /* --- SPLASH SCREEN --- */
-    #splash {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(135deg, #ff0000, #330000);
       display: flex;
       flex-direction: column;
+      justify-content: flex-start;
       align-items: center;
-      justify-content: center;
-      z-index: 100;
-      animation: splashFadeOut 1s ease-in-out forwards;
-      animation-delay: 2.5s;
+      background: radial-gradient(circle at center, #1a0000, #000);
+      color: white;
+      overflow: hidden;
+      padding-top: 5vh;
     }
 
-    #splash img {
-      width: 160px;
-      height: 160px;
-      animation: pulse 1.5s infinite alternate;
-      filter: drop-shadow(0 0 25px #000);
+    /* Effet lumineux de fond */
+    .background-glow {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, #ff000055 0%, transparent 70%);
+      filter: blur(60px);
+      z-index: -1;
+      animation: moveGlow 10s infinite alternate ease-in-out;
     }
 
-    #splash h2 {
-      margin-top: 1.2rem;
-      font-size: 1.5rem;
+    @keyframes moveGlow {
+      0% { transform: translate(-40%, -40%) scale(1); }
+      100% { transform: translate(35%, 45%) scale(1.2); }
+    }
+
+    /* --- LOGO --- */
+    .logo {
+      width: 130px;
+      height: 130px;
+      border-radius: 20%;
+      box-shadow: 0 0 25px #ff000055, 0 0 60px #ff000033 inset;
+      animation: logoPulse 3s infinite alternate;
+      margin-bottom: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    @keyframes logoPulse {
+      from { box-shadow: 0 0 20px #ff000033, 0 0 50px #ff000011 inset; }
+      to { box-shadow: 0 0 40px #ff000077, 0 0 90px #ff000044 inset; }
+    }
+
+    /* --- TITRE --- */
+    h1 {
+      font-size: 2.8rem;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      color: #fff;
-      text-shadow: 0 0 20px #000;
-      animation: fadeInText 1s ease-in-out 0.5s both;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); opacity: 0.9; }
-      to { transform: scale(1.1); opacity: 1; }
-    }
-
-    @keyframes fadeInText {
-      from { opacity: 0; transform: t
-      margin-bottom: 3rem;
+      color: #ff2b2b;
+      text-shadow: 0 0 25px #ff0000aa;
+      margin-bottom: 3.5rem;
       animation: glowPulse 3s infinite alternate;
     }
 
@@ -66,21 +80,23 @@
       to { text-shadow: 0 0 40px #ff0000; }
     }
 
+    /* --- MENU --- */
     .menu {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      width: 80%;
-      max-width: 500px;
+      gap: 2rem;
+      width: 85%;
+      max-width: 550px;
+      margin-top: 1rem;
     }
 
     button {
       background: linear-gradient(145deg, #330000, #660000);
       border: 2px solid #ff2b2b;
       color: #fff;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: bold;
-      padding: 1.5rem 0;
+      padding: 1.7rem 0;
       border-radius: 20px;
       cursor: pointer;
       box-shadow: 0 0 15px #ff000044;
@@ -97,7 +113,7 @@
 
     footer {
       position: absolute;
-      bottom: 10px;
+      bottom: 12px;
       font-size: 0.8rem;
       color: #666;
     }
@@ -106,29 +122,19 @@
       color: #ff3333;
       font-weight: bold;
     }
-
-    /* Animation fond */
-    .background-glow {
-      position: absolute;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, #ff000055 0%, transparent 70%);
-      filter: blur(60px);
-      z-index: -1;
-      animation: moveGlow 10s infinite alternate ease-in-out;
-    }
-
-    @keyframes moveGlow {
-      0% { transform: translate(-50%, -40%) scale(1); }
-      100% { transform: translate(30%, 40%) scale(1.2); }
-    }
   </style>
 </head>
 
 <body>
   <div class="background-glow"></div>
+
+  <!-- Logo -->
+  <img src="icon-512.png" alt="Logo PhysiqueRUSH" class="logo" />
+
+  <!-- Titre -->
   <h1>PhysiqueRUSH</h1>
 
+  <!-- Menu principal -->
   <div class="menu">
     <button id="niveau">💪 Mon Niveau</button>
     <button id="training">🔥 Training Camp</button>
@@ -139,14 +145,14 @@
   <footer>powered by <span>PhysiqueRUSH</span> – Massive Impact</footer>
 
   <script>
-    // Navigation de base (à remplacer plus tard par les vrais modules)
+    // Navigation de base (placeholder)
     document.querySelectorAll("button").forEach(btn => {
       btn.addEventListener("click", () => {
         alert("Module '" + btn.textContent + "' en construction 💥");
       });
     });
 
-    // Enregistrement du Service Worker (pour PWA)
+    // Enregistrement du Service Worker (PWA)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
         .then(() => console.log('Service Worker enregistré'))
