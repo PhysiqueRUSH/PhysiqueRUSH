@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhysiqueRUSH</title>
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0d0d0d" />
+
+  <style>
+    /* --- RESET --- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, #1a0000, #000);
+      color: white;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ff2b2b;
+      text-shadow: 0 0 25px #ff0000aa;
+      margin-bottom: 3rem;
+      animation: glowPulse 3s infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      from { text-shadow: 0 0 10px #ff1a1a; }
+      to { text-shadow: 0 0 40px #ff0000; }
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 80%;
+      max-width: 500px;
+    }
+
+    button {
+      background: linear-gradient(145deg, #330000, #660000);
+      border: 2px solid #ff2b2b;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 1.5rem 0;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff000044;
+      transition: all 0.25s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      background: linear-gradient(145deg, #660000, #990000);
+      box-shadow: 0 0 25px #ff000088;
+      transform: scale(1.05);
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    footer span {
+      color: #ff3333;
+      font-weight: bold;
+    }
+
+    /* Animation fond */
+    .background-glow {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #ff000055 0%, transparent 70%);
+      filter: blur(60px);
+      z-index: -1;
+      animation: moveGlow 10s infinite alternate ease-in-out;
+    }
+
+    @keyframes moveGlow {
+      0% { transform: translate(-50%, -40%) scale(1); }
+      100% { transform: translate(30%, 40%) scale(1.2); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="background-glow"></div>
+  <h1>PhysiqueRUSH</h1>
+
+  <div class="menu">
+    <button id="niveau">💪 Mon Niveau</button>
+    <button id="training">🔥 Training Camp</button>
+    <button id="plan">📘 Nouveau Plan</button>
+    <button id="improvise">⚡ Séance Improvisée</button>
+  </div>
+
+  <footer>powered by <span>PhysiqueRUSH</span> – Massive Impact</footer>
+
+  <script>
+    // Navigation de base (à remplacer plus tard par les vrais modules)
+    document.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        alert("Module '" + btn.textContent + "' en construction 💥");
+      });
+    });
+
+    // Enregistrement du Service Worker (pour PWA)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log('Service Worker enregistré'))
+        .catch(err => console.error('Erreur SW :', err));
+    }
+  </script>
+</body>
+</html>
