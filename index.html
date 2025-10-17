@@ -106,7 +106,6 @@
       transform: scale(1.05);
     }
 
-    /* Effet "gaz rouge" autour des boutons */
     button::before {
       content: "";
       position: absolute;
@@ -126,7 +125,6 @@
       100% { transform: translate(0%, 0%) rotate(360deg); opacity: 0.7; }
     }
 
-    /* --- Fond gazeux global --- */
     .background-glow, .background-glow2 {
       position: absolute;
       width: 600px;
@@ -164,10 +162,10 @@
       font-weight: bold;
     }
 
-    /* --- Bouton retour --- */
+    /* --- Bouton retour (en bas à gauche) --- */
     .back-btn {
       position: absolute;
-      top: 20px;
+      bottom: 20px;
       left: 20px;
       background: #660000aa;
       color: #fff;
@@ -189,7 +187,6 @@
 </head>
 
 <body>
-  <!-- Fond gazeux -->
   <div class="background-glow"></div>
   <div class="background-glow2"></div>
 
@@ -209,7 +206,6 @@
 
   <!-- Écran "Mon Niveau" -->
   <section id="niveau-screen" class="screen">
-    <button class="back-btn" id="back">⬅ Retour</button>
     <img src="icon-512.png" alt="Logo PhysiqueRUSH" class="logo" />
     <h1>PhysiqueRUSH</h1>
 
@@ -218,6 +214,8 @@
       <button id="evolution">🧬 Mon Évolution</button>
       <button id="historique">🏆 Historique des Perfs</button>
     </div>
+
+    <button class="back-btn" id="back">⬅ Retour</button>
 
     <footer>powered by <span>PhysiqueRUSH</span> – Massive Impact</footer>
   </section>
@@ -238,14 +236,12 @@
       mainScreen.classList.add("active");
     });
 
-    // Placeholder boutons secondaires
     document.querySelectorAll("#training, #improvise, #testroom, #evolution, #historique").forEach(btn => {
       btn.addEventListener("click", () => {
         alert("Module '" + btn.textContent + "' en construction 💥");
       });
     });
 
-    // Enregistrement du Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
         .then(() => console.log('Service Worker enregistré'))
