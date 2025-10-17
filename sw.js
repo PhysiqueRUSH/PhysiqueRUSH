@@ -1,4 +1,4 @@
-const CACHE_NAME = "physiquerush-cache-v0.09";
+const CACHE_NAME = "physiquerush-cache-v0.10";
 const ASSETS_TO_CACHE = [
   "index.html",
   "manifest.json",
