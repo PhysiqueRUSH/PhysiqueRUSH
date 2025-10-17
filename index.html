@@ -61,7 +61,7 @@
       text-transform: uppercase;
       color: #ff2b2b;
       text-shadow: 0 0 30px #ff000099;
-      margin-bottom: 3rem;
+      margin-bottom: 2.5rem;
       animation: glowPulse 3s infinite alternate;
     }
 
@@ -70,16 +70,17 @@
       to { text-shadow: 0 0 45px #ff0000; }
     }
 
-    /* --- Disposition verticale équilibrée --- */
+    /* --- Menus --- */
     .menu {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      height: 50vh;
+      gap: 1.6rem;
+      margin-top: 1rem;
+      z-index: 2;
       width: 80%;
       max-width: 400px;
-      z-index: 2;
     }
 
     button {
@@ -88,7 +89,7 @@
       color: #fff;
       font-size: 1.25rem;
       font-weight: bold;
-      padding: 1.6rem 0;
+      padding: 1.4rem 0;
       width: 100%;
       border-radius: 20px;
       cursor: pointer;
@@ -106,6 +107,7 @@
       transform: scale(1.05);
     }
 
+    /* Effet gazeux autour des boutons */
     button::before {
       content: "";
       position: absolute;
@@ -125,6 +127,7 @@
       100% { transform: translate(0%, 0%) rotate(360deg); opacity: 0.7; }
     }
 
+    /* --- Fond gazeux global --- */
     .background-glow, .background-glow2 {
       position: absolute;
       width: 600px;
@@ -149,6 +152,7 @@
       100% { transform: translate(-30%, 40%) scale(1); opacity: 0.6; }
     }
 
+    /* --- Footer --- */
     footer {
       position: absolute;
       bottom: 12px;
@@ -162,20 +166,21 @@
       font-weight: bold;
     }
 
-    /* --- Bouton retour (en bas à gauche) --- */
+    /* --- Bouton retour (bas gauche, compact) --- */
     .back-btn {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
+      bottom: 60px; /* bien séparé du footer */
+      left: 25px;
       background: #660000aa;
       color: #fff;
       border: 1px solid #ff3333;
-      border-radius: 12px;
-      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      padding: 0.4rem 0.8rem;
       font-size: 0.9rem;
       cursor: pointer;
       box-shadow: 0 0 10px #ff000055;
       transition: all 0.3s ease;
+      width: auto;
       z-index: 5;
     }
 
@@ -187,6 +192,7 @@
 </head>
 
 <body>
+  <!-- Fond gazeux -->
   <div class="background-glow"></div>
   <div class="background-glow2"></div>
 
@@ -236,12 +242,14 @@
       mainScreen.classList.add("active");
     });
 
+    // Boutons en développement
     document.querySelectorAll("#training, #improvise, #testroom, #evolution, #historique").forEach(btn => {
       btn.addEventListener("click", () => {
         alert("Module '" + btn.textContent + "' en construction 💥");
       });
     });
 
+    // PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
         .then(() => console.log('Service Worker enregistré'))
