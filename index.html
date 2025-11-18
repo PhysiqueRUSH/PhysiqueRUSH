@@ -31,7 +31,7 @@
       align-items: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.8s ease;
+      transition: opacity 0.5s ease;
       padding-top: 5vh;
     }
 
@@ -48,6 +48,7 @@
       box-shadow: 0 0 25px #ff000044, 0 0 60px #ff000022 inset;
       animation: logoPulse 3s infinite alternate;
       margin-bottom: 1rem;
+      z-index: 2;
     }
 
     @keyframes logoPulse {
@@ -61,22 +62,23 @@
       text-transform: uppercase;
       color: #ff2b2b;
       text-shadow: 0 0 30px #ff000099;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
       animation: glowPulse 3s infinite alternate;
+      z-index: 2;
     }
 
     @keyframes glowPulse {
       from { text-shadow: 0 0 10px #ff1a1a; }
-      to { text-shadow: 0 0 45px #ff0000; }
+      to   { text-shadow: 0 0 45px #ff0000; }
     }
 
-    /* --- Menus --- */
+    /* --- Menus généraux --- */
     .menu {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 1.6rem;
+      gap: 1.4rem;
       margin-top: 1rem;
       z-index: 2;
       width: 80%;
@@ -87,47 +89,42 @@
       background: linear-gradient(145deg, #330000, #660000);
       border: 2px solid #ff2b2b;
       color: #fff;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: bold;
-      padding: 1.4rem 0;
+      padding: 1.1rem 0;
       width: 100%;
       border-radius: 20px;
       cursor: pointer;
-      box-shadow: 0 0 25px #ff000044;
-      transition: all 0.25s ease;
+      box-shadow: 0 0 20px #ff000044;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
       position: relative;
       overflow: hidden;
+      z-index: 2;
     }
 
     button:hover {
       background: linear-gradient(145deg, #660000, #990000);
-      box-shadow: 0 0 35px #ff000099;
-      transform: scale(1.05);
+      box-shadow: 0 0 30px #ff000088;
+      transform: scale(1.03);
     }
 
-    /* Effet gazeux autour des boutons */
+    /* Effet rouge doux autour des boutons (SANS animation pour les perfs) */
     button::before {
       content: "";
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,0,0,0.2) 0%, transparent 70%);
-      animation: gasFloat 6s infinite ease-in-out;
-      filter: blur(50px);
+      top: -40%;
+      left: -40%;
+      width: 180%;
+      height: 180%;
+      background: radial-gradient(circle, rgba(255,0,0,0.18) 0%, transparent 70%);
+      filter: blur(45px);
       z-index: -1;
+      opacity: 0.7;
     }
 
-    @keyframes gasFloat {
-      0%   { transform: translate(0%, 0%) rotate(0deg); opacity: 0.7; }
-      50%  { transform: translate(20%, -20%) rotate(180deg); opacity: 1; }
-      100% { transform: translate(0%, 0%) rotate(360deg); opacity: 0.7; }
-    }
-
-    /* --- Fond gazeux global --- */
+    /* --- Fond gazeux global (halo rouge statique, pas d'animation) --- */
     .background-glow, .background-glow2 {
       position: absolute;
       width: 600px;
@@ -135,21 +132,19 @@
       background: radial-gradient(circle, #ff000033 0%, transparent 70%);
       filter: blur(100px);
       z-index: 0;
-      animation: floatGas 14s infinite alternate ease-in-out;
+    }
+
+    .background-glow {
+      top: -100px;
+      left: -100px;
     }
 
     .background-glow2 {
+      bottom: -150px;
+      right: -150px;
       width: 800px;
       height: 800px;
       background: radial-gradient(circle, #ff222244 0%, transparent 70%);
-      animation-duration: 18s;
-      animation-delay: 3s;
-    }
-
-    @keyframes floatGas {
-      0% { transform: translate(-40%, -40%) scale(1); opacity: 0.5; }
-      50% { transform: translate(40%, 30%) scale(1.3); opacity: 0.8; }
-      100% { transform: translate(-30%, 40%) scale(1); opacity: 0.6; }
     }
 
     /* --- Footer --- */
@@ -179,7 +174,7 @@
       font-size: 0.9rem;
       cursor: pointer;
       box-shadow: 0 0 10px #ff000055;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       width: auto;
       z-index: 5;
     }
@@ -187,6 +182,106 @@
     .back-btn:hover {
       background: #990000;
       transform: scale(1.05);
+    }
+
+    /* --- Textes secondaires --- */
+    .subtitle {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #dddddd;
+      text-align: center;
+      max-width: 85%;
+      z-index: 2;
+    }
+
+    .small-text {
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      color: #bbbbbb;
+      text-align: center;
+      max-width: 90%;
+      z-index: 2;
+    }
+
+    /* --- La Test Room --- */
+    .testroom-container {
+      margin-top: 0.5rem;
+      width: 90%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      z-index: 2;
+    }
+
+    .testroom-container .menu {
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .test-btn {
+      font-size: 1rem;
+      padding: 0.9rem 0;
+      text-transform: none;
+      letter-spacing: 0.5px;
+    }
+
+    .test-btn span {
+      font-size: 0.8rem;
+      font-weight: normal;
+      text-transform: none;
+    }
+
+    .test-form {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .test-input {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 12px;
+      border: 1px solid #ff5555;
+      background: #1a0000;
+      color: #ffffff;
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+    }
+
+    .test-buttons-row {
+      display: flex;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    .test-buttons-row button {
+      flex: 1;
+      font-size: 1rem;
+      padding: 0.8rem 0;
+    }
+
+    /* --- Mon Évolution / Radar --- */
+    .evolution-container {
+      margin-top: 0.5rem;
+      width: 90%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      z-index: 2;
+    }
+
+    #evolution-radar {
+      background: radial-gradient(circle at center, #220000, #000000);
+      border-radius: 50%;
+      box-shadow: 0 0 20px #ff000040;
     }
   </style>
 </head>
@@ -221,39 +316,357 @@
       <button id="historique">🏆 Historique des Perfs</button>
     </div>
 
-    <button class="back-btn" id="back">⬅ Retour</button>
+    <button class="back-btn" id="back-niveau">⬅ Retour</button>
+
+    <footer>powered by <span>PhysiqueRUSH</span> – Massive Impact</footer>
+  </section>
+
+  <!-- Écran "La Test Room" -->
+  <section id="testroom-screen" class="screen">
+    <img src="icon-512.png" alt="Logo PhysiqueRUSH" class="logo" />
+    <h1>PhysiqueRUSH</h1>
+
+    <div class="testroom-container">
+      <p class="subtitle">
+        Choisis un test, entre ton score et valide. Seul le <b>dernier résultat</b> est utilisé pour le radar.
+      </p>
+
+      <!-- Menu des tests -->
+      <div class="menu" id="testroom-menu">
+        <button class="test-btn" data-test="push">
+          💥 Palier Push<br><span>Puissance de poussée</span>
+        </button>
+        <button class="test-btn" data-test="pull">
+          🛡 Palier Pull<br><span>Endurance du dos</span>
+        </button>
+        <button class="test-btn" data-test="legs">
+          🦵 Palier Legs<br><span>Force des jambes</span>
+        </button>
+        <button class="test-btn" data-test="cardio">
+          ❤️ Test Cardio<br><span>Capacité cardiaque</span>
+        </button>
+        <button class="test-btn" data-test="definition">
+          🧱 Définition<br><span>%BF (plus bas = mieux)</span>
+        </button>
+      </div>
+
+      <!-- Formulaire de saisie d'un test -->
+      <div id="test-form" class="test-form">
+        <h2 id="test-name">Test</h2>
+        <input
+          type="number"
+          id="test-score"
+          class="test-input"
+          step="0.1"
+          placeholder="Entre ton score"
+        />
+        <div class="test-buttons-row">
+          <button id="save-test">✅ Enregistrer</button>
+          <button id="cancel-test">✖ Annuler</button>
+        </div>
+        <p class="small-text">
+          Pour la <b>Définition</b>, saisis simplement ton <b>%BF actuel</b> (plus il est bas, mieux c'est).
+        </p>
+      </div>
+    </div>
+
+    <button class="back-btn" id="back-testroom">⬅ Retour</button>
+
+    <footer>powered by <span>PhysiqueRUSH</span> – Massive Impact</footer>
+  </section>
+
+  <!-- Écran "Mon Évolution" -->
+  <section id="evolution-screen" class="screen">
+    <img src="icon-512.png" alt="Logo PhysiqueRUSH" class="logo" />
+    <h1>PhysiqueRUSH</h1>
+
+    <div class="evolution-container">
+      <p class="subtitle">
+        Radar des 5 tests : Push, Pull, Legs, Cardio, Définition (%BF). Chaque axe utilise ton <b>dernier</b> résultat.
+      </p>
+
+      <canvas id="evolution-radar" width="320" height="320"></canvas>
+
+      <p id="evo-legend" class="small-text">
+        Va dans "La Test Room" pour enregistrer tes premiers tests.
+      </p>
+    </div>
+
+    <button class="back-btn" id="back-evolution">⬅ Retour</button>
 
     <footer>powered by <span>PhysiqueRUSH</span> – Massive Impact</footer>
   </section>
 
   <script>
-    const mainScreen = document.getElementById("main-screen");
-    const niveauScreen = document.getElementById("niveau-screen");
-    const backBtn = document.getElementById("back");
-    const niveauBtn = document.getElementById("niveau");
+    /* ========= Navigation entre écrans ========= */
+    const screens = {
+      main:      document.getElementById("main-screen"),
+      niveau:    document.getElementById("niveau-screen"),
+      testroom:  document.getElementById("testroom-screen"),
+      evolution: document.getElementById("evolution-screen"),
+    };
 
-    niveauBtn.addEventListener("click", () => {
-      mainScreen.classList.remove("active");
-      niveauScreen.classList.add("active");
+    function setActiveScreen(name) {
+      Object.values(screens).forEach(s => s.classList.remove("active"));
+      if (screens[name]) {
+        screens[name].classList.add("active");
+      }
+    }
+
+    // Boutons principaux
+    const niveauBtn        = document.getElementById("niveau");
+    const backNiveauBtn    = document.getElementById("back-niveau");
+    const testroomBtn      = document.getElementById("testroom");
+    const backTestroomBtn  = document.getElementById("back-testroom");
+    const evolutionBtn     = document.getElementById("evolution");
+    const backEvolutionBtn = document.getElementById("back-evolution");
+
+    niveauBtn.addEventListener("click", () => setActiveScreen("niveau"));
+    backNiveauBtn.addEventListener("click", () => setActiveScreen("main"));
+
+    testroomBtn.addEventListener("click", () => {
+      showTestroomMenu();
+      setActiveScreen("testroom");
     });
 
-    backBtn.addEventListener("click", () => {
-      niveauScreen.classList.remove("active");
-      mainScreen.classList.add("active");
+    backTestroomBtn.addEventListener("click", () => setActiveScreen("niveau"));
+
+    evolutionBtn.addEventListener("click", () => {
+      setActiveScreen("evolution");
+      updateRadarChart();
     });
 
-    // Boutons en développement
-    document.querySelectorAll("#training, #improvise, #testroom, #evolution, #historique").forEach(btn => {
+    backEvolutionBtn.addEventListener("click", () => setActiveScreen("niveau"));
+
+    // Modules pas encore développés
+    document.getElementById("training").addEventListener("click", () => {
+      alert("Module 'Training Camp' en construction 💥");
+    });
+    document.getElementById("improvise").addEventListener("click", () => {
+      alert("Module 'Séance Improvisée' en construction 💥");
+    });
+    document.getElementById("historique").addEventListener("click", () => {
+      alert("Module 'Historique des Perfs' en construction 💥");
+    });
+
+    /* ========= Stockage des tests ========= */
+    const TEST_KEYS = [
+      { key: "push",       label: "Push" },
+      { key: "pull",       label: "Pull" },
+      { key: "legs",       label: "Legs" },
+      { key: "cardio",     label: "Cardio" },
+      { key: "definition", label: "Définition" } // %BF (plus bas = mieux)
+    ];
+    const STORAGE_KEY = "physiqueRushTests";
+
+    function loadTestData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw);
+      } catch (e) {
+        console.error("Erreur lecture stockage:", e);
+        return {};
+      }
+    }
+
+    function saveTestData(data) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.error("Erreur écriture stockage:", e);
+      }
+    }
+
+    // Transforme un %BF (plus bas = mieux) en "score" pour le radar
+    // ≥ 30 %  -> score mini
+    // 8  %    -> score maxi
+    function bfToScore(bf) {
+      const maxBF = 30; // très gras
+      const minBF = 8;  // très sec
+      const clamped = Math.max(minBF, Math.min(maxBF, bf));
+      const ratio01 = (maxBF - clamped) / (maxBF - minBF); // 30->0, 8->1
+      return ratio01 * 10; // on ramène sur une échelle 0..10
+    }
+
+    /* ========= La Test Room ========= */
+    const testroomMenu    = document.getElementById("testroom-menu");
+    const testForm        = document.getElementById("test-form");
+    const testNameEl      = document.getElementById("test-name");
+    const testScoreInput  = document.getElementById("test-score");
+    const saveTestBtn     = document.getElementById("save-test");
+    const cancelTestBtn   = document.getElementById("cancel-test");
+    let currentTestKey    = null;
+
+    function showTestroomMenu() {
+      testForm.style.display = "none";
+      testroomMenu.style.display = "flex";
+    }
+
+    function showTestForm() {
+      testroomMenu.style.display = "none";
+      testForm.style.display = "flex";
+    }
+
+    // Ouverture de la saisie d'un test
+    document.querySelectorAll(".test-btn").forEach(btn => {
       btn.addEventListener("click", () => {
-        alert("Module '" + btn.textContent + "' en construction 💥");
+        currentTestKey = btn.dataset.test;
+
+        // Titre = première ligne du bouton
+        const fullText = btn.textContent.trim();
+        const firstLine = fullText.split("\n")[0];
+        testNameEl.textContent = firstLine;
+
+        // Placeholder spécifique pour Définition (%BF)
+        if (currentTestKey === "definition") {
+          testScoreInput.placeholder = "Entre ton %BF (ex : 12.5)";
+        } else {
+          testScoreInput.placeholder = "Entre ton score (reps, paliers, etc.)";
+        }
+
+        testScoreInput.value = "";
+        showTestForm();
       });
     });
 
+    // Enregistrement d'un test
+    saveTestBtn.addEventListener("click", () => {
+      if (!currentTestKey) return;
+
+      const rawVal = testScoreInput.value.replace(",", ".");
+      const val = parseFloat(rawVal);
+
+      if (isNaN(val) || val <= 0) {
+        alert("Merci d'entrer une valeur numérique positive.");
+        return;
+      }
+
+      const data = loadTestData();
+      data[currentTestKey] = val;
+      saveTestData(data);
+
+      alert("Test sauvegardé ✅");
+      currentTestKey = null;
+      showTestroomMenu();
+    });
+
+    // Annuler la saisie
+    cancelTestBtn.addEventListener("click", () => {
+      currentTestKey = null;
+      showTestroomMenu();
+    });
+
+    /* ========= Radar 'Mon Évolution' ========= */
+    function updateRadarChart() {
+      const canvas = document.getElementById("evolution-radar");
+      const legendEl = document.getElementById("evo-legend");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const rawData = loadTestData();
+
+      // Prépare les valeurs pour les 5 axes
+      const values = TEST_KEYS.map(t => {
+        const v = rawData[t.key];
+        if (!v || v <= 0) return 0;
+
+        if (t.key === "definition") {
+          // v = %BF → transformé en score "définition"
+          return bfToScore(v);
+        }
+        return v;
+      });
+
+      const hasData = values.some(v => v > 0);
+
+      if (!hasData) {
+        legendEl.textContent =
+          'Aucune donnée pour l\'instant. Va dans "La Test Room" pour enregistrer tes premiers tests.';
+        return;
+      } else {
+        let txt = "Chaque axe représente ton dernier résultat pour chaque test.";
+        if (rawData.definition) {
+          txt += " Axe Définition basé sur ton %BF actuel (" + rawData.definition + " %).";
+        }
+        legendEl.textContent = txt;
+      }
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = Math.min(w, h) * 0.35;
+
+      // Échelle max (min 10 pour garder une forme lisible)
+      const maxValue = Math.max(10, ...values);
+
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      // Cercles de fond
+      ctx.strokeStyle = "#552222";
+      ctx.lineWidth = 1;
+      const steps = 4;
+      for (let s = 1; s <= steps; s++) {
+        const r = (radius * s) / steps;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Axes + labels
+      const n = TEST_KEYS.length;
+      ctx.font = "12px Poppins, Arial";
+      ctx.fillStyle = "#ffffff";
+
+      TEST_KEYS.forEach((t, i) => {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+
+        // Axe
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        // Label un peu au-delà du bord
+        const lx = Math.cos(angle) * (radius + 16);
+        const ly = Math.sin(angle) * (radius + 16);
+        ctx.textAlign = lx > 0 ? "left" : "right";
+        ctx.textBaseline = ly > 0 ? "top" : "bottom";
+        ctx.fillText(t.label, lx, ly);
+      });
+
+      // Polygone des valeurs
+      ctx.beginPath();
+      values.forEach((val, i) => {
+        const ratio = val / maxValue;
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        const r = radius * ratio;
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+      ctx.fillStyle = "rgba(255,80,80,0.35)";
+      ctx.strokeStyle = "#ff5555";
+      ctx.lineWidth = 2;
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
     // PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('Service Worker enregistré'))
-        .catch(err => console.error('Erreur SW :', err));
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js")
+        .then(() => console.log("Service Worker enregistré"))
+        .catch(err => console.error("Erreur SW :", err));
     }
   </script>
 </body>
