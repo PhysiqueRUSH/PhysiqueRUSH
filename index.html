@@ -23,16 +23,16 @@
     }
 
     /* === Gestion des écrans === */
-.screen {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  display: none;                 /* caché par défaut */
-  flex-direction: column;
-  align-items: center;
-  padding-top: 5vh;
-  padding-bottom: 90px;          /* réserve de place pour le bouton Retour */
-}
+    .screen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;                 /* caché par défaut */
+      flex-direction: column;
+      align-items: center;
+      padding-top: 5vh;
+      padding-bottom: 90px;          /* réserve de place pour le bouton Retour */
+    }
 
     .screen.active {
       display: flex;                 /* on affiche seulement l’écran actif */
@@ -93,7 +93,6 @@
       width: 100%;
       border-radius: 20px;
       cursor: pointer;
-      /* halo rouge mais plus léger */
       box-shadow: 0 0 18px rgba(255,0,0,0.5);
       transition: transform 0.12s ease, box-shadow 0.12s ease;
       text-transform: uppercase;
@@ -103,6 +102,12 @@
     button:hover {
       transform: translateY(-1px) scale(1.02);
       box-shadow: 0 0 24px rgba(255,0,0,0.7);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+      box-shadow: none;
     }
 
     /* --- Fond gazeux global (halo rouge statique) --- */
@@ -142,35 +147,28 @@
       font-weight: bold;
     }
 
-    /* --- Bouton retour : haut gauche pour ne pas gêner sur mobile --- */
-.back-btn {
-  position: absolute;
-  bottom: 60px;                  /* bas de l’écran */
-  left: 16px;                    /* coin gauche */
-  background: #660000aa;
-  color: #fff;
-  border: 1px solid #ff3333;
-  border-radius: 10px;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  box-shadow: 0 0 10px #ff000055;
-  transition: all 0.2s ease;
-  width: auto;
-  z-index: 5;
-}
+    /* --- Bouton retour : bas gauche --- */
+    .back-btn {
+      position: absolute;
+      bottom: 60px;                  /* bas de l’écran */
+      left: 16px;                    /* coin gauche */
+      background: #660000aa;
+      color: #fff;
+      border: 1px solid #ff3333;
+      border-radius: 10px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff000055;
+      transition: all 0.2s ease;
+      width: auto;
+      z-index: 5;
+    }
 
-.back-btn:hover {
-  background: #990000;
-  transform: scale(1.05);
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: default;
-  box-shadow: none;
-}
-    
+    .back-btn:hover {
+      background: #990000;
+      transform: scale(1.05);
+    }
 
     /* --- Textes secondaires --- */
     .subtitle {
@@ -323,30 +321,28 @@ button:disabled {
       display: flex;
     }
 
-.big-countdown {
-  font-size: 5.5rem;
-  font-weight: bold;
-  text-shadow: 0 0 30px #ff0000;
-  margin-bottom: 1.2rem;
-}
+    .big-countdown {
+      font-size: 5.5rem;
+      font-weight: bold;
+      text-shadow: 0 0 30px #ff0000;
+      margin-bottom: 1.2rem;
+    }
 
-
-   .push-phase-text {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  padding: 0.8rem 1rem;
-  border-radius: 12px;
-  background: rgba(255,0,0,0.18);
-  border: 1px solid rgba(255,80,80,0.9);
-  text-shadow: 0 0 8px rgba(0,0,0,0.7);
-}
-
+    .push-phase-text {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      background: rgba(255,0,0,0.18);
+      border: 1px solid rgba(255,80,80,0.9);
+      text-shadow: 0 0 8px rgba(0,0,0,0.7);
+    }
 
     .push-mini-video-wrapper {
       width: 70%;
       max-width: 260px;
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.4rem;
     }
 
     .push-mini-video-wrapper iframe {
@@ -356,13 +352,12 @@ button:disabled {
       border: 0;
     }
 
-.push-level-count {
-  font-size: 2.6rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  text-shadow: 0 0 20px #ff0000;
-}
-
+    .push-level-count {
+      font-size: 2.6rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px #ff0000;
+    }
 
     .push-actions {
       display: flex;
@@ -390,8 +385,8 @@ button:disabled {
     }
   </style>
 
+  <!-- API Vimeo pour écouter l’événement "play" -->
   <script src="https://player.vimeo.com/api/player.js"></script>
-
 </head>
 
 <body>
@@ -490,11 +485,11 @@ button:disabled {
 
     <div class="push-container">
       <p class="subtitle">
-        Test guidé de <b>Puissance de Poussée</b>. Regarde d'abord la vidéo, puis lance le compte à rebours.
+        Test guidé de <b>Puissance de Poussée</b>. Regarde d'abord la vidéo, puis lance le test.
       </p>
 
       <div class="push-video-wrapper">
-        <!-- Remplace XXXXXXXX par l'ID Vimeo de ta vidéo explicative -->
+        <!-- Mets ici la vidéo EXPLICATIVE si tu veux -->
         <iframe
           src="https://player.vimeo.com/video/XXXXXXXX"
           allow="autoplay; fullscreen; picture-in-picture"
@@ -583,16 +578,22 @@ button:disabled {
 
     backEvolutionBtn.addEventListener("click", () => setActiveScreen("niveau"));
 
-backPushBtn.addEventListener("click", () => {
-  clearPushInterval();
-  document.getElementById("push-overlay").classList.remove("active");
-  exitFullscreenLandscape();
-  setActiveScreen("testroom");
-});
+    backPushBtn.addEventListener("click", () => {
+      clearPushInterval();
+      if (pushPreIntervalId) {
+        clearInterval(pushPreIntervalId);
+        pushPreIntervalId = null;
+      }
+      document.getElementById("push-overlay").classList.remove("active");
+      exitFullscreenLandscape();
+      setActiveScreen("testroom");
+    });
 
-
+    // Clic sur "Commencer" : plein écran + overlay + écran palier
     pushStartBtn.addEventListener("click", () => {
-      startPushInitialCountdown();
+      enterFullscreenLandscape();
+      pushOverlay.classList.add("active");
+      showPushLevel1Phase();
     });
 
     // Modules pas encore développés
@@ -823,54 +824,53 @@ backPushBtn.addEventListener("click", () => {
       ctx.restore();
     }
 
-
-/* ========= Plein écran + verrouillage paysage ========= */
-async function enterFullscreenLandscape() {
-  const elem = document.documentElement;
-  try {
-    if (elem.requestFullscreen) {
-      await elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
-    }
-    if (screen.orientation && screen.orientation.lock) {
+    /* ========= Plein écran + verrouillage paysage ========= */
+    async function enterFullscreenLandscape() {
+      const elem = document.documentElement;
       try {
-        await screen.orientation.lock('landscape');
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        }
+        if (screen.orientation && screen.orientation.lock) {
+          try {
+            await screen.orientation.lock('landscape');
+          } catch (e) {
+            console.warn('Orientation lock non supportée ou refusée.', e);
+          }
+        }
       } catch (e) {
-        console.warn('Orientation lock non supportée ou refusée.', e);
+        console.warn('Erreur plein écran :', e);
       }
     }
-  } catch (e) {
-    console.warn('Erreur plein écran :', e);
-  }
-}
 
-async function exitFullscreenLandscape() {
-  try {
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
-      if (document.exitFullscreen) {
-        await document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
+    async function exitFullscreenLandscape() {
+      try {
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      } catch (e) {
+        console.warn('Erreur sortie plein écran :', e);
       }
     }
-    if (screen.orientation && screen.orientation.unlock) {
-      screen.orientation.unlock();
-    }
-  } catch (e) {
-    console.warn('Erreur sortie plein écran :', e);
-  }
-}
 
-    
     /* ========= Test Puissance de Poussée (guidé) ========= */
     const pushOverlay = document.getElementById("push-overlay");
     const pushOverlayContent = document.getElementById("push-overlay-content");
-    let pushInterval = null;
+    let pushInterval = null;       // chrono principal (1 minute)
+    let pushPreIntervalId = null;  // pré-compte à rebours 5s
     let pushTimeLeft = 0;
     let pushLevel1Validated = false;
     let audioCtx = null;
-    let pushVimeoPlayer = null; // player Vimeo pour le palier 1
+    let pushVimeoPlayer = null;    // player Vimeo du palier
 
     function clearPushInterval() {
       if (pushInterval) {
@@ -905,146 +905,155 @@ async function exitFullscreenLandscape() {
       }
     }
 
-function startPushInitialCountdown() {
-  clearPushInterval();
-  pushLevel1Validated = false;
-
-  // Plein écran + paysage pendant le test
-  enterFullscreenLandscape();
-
-  pushOverlay.classList.add("active");
-  pushOverlayContent.innerHTML =
-    '<div class="big-countdown" id="push-big-count">5</div>';
-  const countEl = document.getElementById("push-big-count");
-  pushTimeLeft = 5;
-
-  pushInterval = setInterval(() => {
-    pushTimeLeft--;
-    if (pushTimeLeft <= 0) {
-      clearPushInterval();
-      showPushLevel1Phase();
-    } else {
-      countEl.textContent = pushTimeLeft;
-    }
-  }, 1000);
-}
-
-
     function formatTime(sec) {
       const m = Math.floor(sec / 60);
       const s = sec % 60;
       return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
     }
 
- function showPushLevel1Phase() {
-  // 1) Construire l'interface du palier
-  pushOverlayContent.innerHTML = `
-    <p class="push-phase-text" id="push-phase-text">
-      Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop
-    </p>
-    <div class="push-mini-video-wrapper">
-      <iframe
-        id="push-demo-video"
-        src="https://player.vimeo.com/video/474104138?muted=1&playsinline=1"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen
-        title="Démonstration pompes Dead Stop"
-      ></iframe>
-    </div>
-    <div class="push-level-count" id="push-level-count">01:00</div>
-    <div class="push-actions">
-      <button class="push-ok-btn" id="push-ok-btn">✅ Validé</button>
-      <button class="push-fail-btn" id="push-fail-btn">❌ Non validé</button>
-    </div>
-  `;
+    function showPushLevel1Phase() {
+      // 1) Construire l'interface du palier
+      pushOverlayContent.innerHTML = `
+        <p class="push-phase-text" id="push-phase-text">
+          Mets la vidéo sur Lecture pour lancer le test...
+        </p>
+        <div class="push-mini-video-wrapper">
+          <iframe
+            id="push-demo-video"
+            src="https://player.vimeo.com/video/474104138?muted=1&playsinline=1"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+            title="Démonstration pompes Dead Stop"
+          ></iframe>
+        </div>
+        <p class="small-text" id="push-launch-text">Lancement dans :</p>
+        <div class="push-level-count" id="push-level-count">5</div>
+        <div class="push-actions">
+          <button class="push-ok-btn" id="push-ok-btn">✅ Validé</button>
+          <button class="push-fail-btn" id="push-fail-btn">❌ Non validé</button>
+        </div>
+      `;
 
-  const txtEl   = document.getElementById("push-phase-text");
-  const countEl = document.getElementById("push-level-count");
-  const okBtn   = document.getElementById("push-ok-btn");
-  const failBtn = document.getElementById("push-fail-btn");
+      const txtEl       = document.getElementById("push-phase-text");
+      const launchText  = document.getElementById("push-launch-text");
+      const countEl     = document.getElementById("push-level-count");
+      const okBtn       = document.getElementById("push-ok-btn");
+      const failBtn     = document.getElementById("push-fail-btn");
+      const iframe      = document.getElementById("push-demo-video");
 
-  // --- Fonction locale : démarre vraiment le chrono d'1 minute (UNE seule fois) ---
-  let level1TimerStarted = false;
+      // Reset timers
+      if (pushPreIntervalId) {
+        clearInterval(pushPreIntervalId);
+        pushPreIntervalId = null;
+      }
+      clearPushInterval();
 
-  function startLevel1Timer() {
-    if (level1TimerStarted) return;    // évite tout double démarrage
-    level1TimerStarted = true;
+      let preStarted = false;   // pour ne démarrer que 1x le pré-compte
+      let mainStarted = false;  // pour ne démarrer que 1x le chrono principal
 
-    clearPushInterval();
-    pushTimeLeft = 60;
-    countEl.textContent = formatTime(pushTimeLeft);
+      // --- fonctions internes ---
+      function startPreCountdown() {
+        if (preStarted) return;
+        preStarted = true;
 
-    pushInterval = setInterval(() => {
-      if (pushTimeLeft <= 0) {
+        let preRemaining = 5;
+        countEl.textContent = String(preRemaining);
+
+        pushPreIntervalId = setInterval(() => {
+          preRemaining--;
+          if (preRemaining <= 0) {
+            clearInterval(pushPreIntervalId);
+            pushPreIntervalId = null;
+            // On enlève le texte "Lancement dans :" et on passe au palier 1
+            if (launchText) {
+              launchText.textContent = "";
+            }
+            txtEl.textContent = "Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop";
+            startMainCountdown();
+            return;
+          }
+          countEl.textContent = String(preRemaining);
+        }, 1000);
+      }
+
+      function startMainCountdown() {
+        if (mainStarted) return;
+        mainStarted = true;
+
+        pushTimeLeft = 60;
+        countEl.textContent = formatTime(pushTimeLeft);
+
         clearPushInterval();
-        countEl.textContent = "00:00";
-        return;
+        pushInterval = setInterval(() => {
+          if (pushTimeLeft <= 0) {
+            clearPushInterval();
+            countEl.textContent = "00:00";
+            return;
+          }
+
+          pushTimeLeft--;
+          countEl.textContent = formatTime(pushTimeLeft);
+
+          // 3 bips finaux sur les 3 dernières secondes
+          if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
+            playBeep();
+          }
+        }, 1000);
       }
 
-      pushTimeLeft--;
-      countEl.textContent = formatTime(pushTimeLeft);
-
-      // 3 bips finaux sur les 3 dernières secondes
-      if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
-        playBeep();
-      }
-    }, 1000);
-  }
-
-  // --- Boutons ✅ / ❌ (désactivés après clic) ---
-  okBtn.addEventListener("click", () => {
-    if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
-    pushLevel1Validated = true;
-    okBtn.disabled = true;
-    failBtn.disabled = true;
-    txtEl.textContent = "Reposez-vous ! Le palier suivant arrive...";
-  });
-
-  failBtn.addEventListener("click", () => {
-    if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
-    pushLevel1Validated = false;
-    okBtn.disabled = true;
-    failBtn.disabled = true;
-    clearPushInterval();
-    countEl.textContent = "00:00";
-    txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
-  });
-
-  // --- 2) Initialiser le player Vimeo et ne lancer le chrono qu'une fois la vidéo en lecture ---
-  const iframe = document.getElementById("push-demo-video");
-
-  if (window.Vimeo && typeof Vimeo.Player === "function") {
-    try {
-      pushVimeoPlayer = new Vimeo.Player(iframe);
-
-      pushVimeoPlayer.setLoop(true);
-      pushVimeoPlayer.setMuted(true);
-
-      // Quand la vidéo commence effectivement à jouer → on démarre le chrono
-      pushVimeoPlayer.on("play", () => {
-        startLevel1Timer();
+      // --- Boutons ✅ / ❌ (désactivés après clic) ---
+      okBtn.addEventListener("click", () => {
+        if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
+        pushLevel1Validated = true;
+        okBtn.disabled = true;
+        failBtn.disabled = true;
+        txtEl.textContent = "Reposez-vous ! Le palier suivant arrive...";
       });
 
-      // On prépare la vidéo puis on lance la lecture
-      pushVimeoPlayer.ready()
-        .then(() => pushVimeoPlayer.setCurrentTime(0))
-        .then(() => pushVimeoPlayer.play())
-        .catch(err => {
-          console.warn("Lecture Vimeo bloquée ou erreur :", err);
-          // Si la lecture échoue, on lance quand même le chrono pour ne pas bloquer le test
-          startLevel1Timer();
-        });
+      failBtn.addEventListener("click", () => {
+        if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
+        pushLevel1Validated = false;
+        okBtn.disabled = true;
+        failBtn.disabled = true;
+        if (pushPreIntervalId) {
+          clearInterval(pushPreIntervalId);
+          pushPreIntervalId = null;
+        }
+        clearPushInterval();
+        countEl.textContent = "00:00";
+        txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
+      });
 
-    } catch (e) {
-      console.warn("Erreur Vimeo Player :", e);
-      startLevel1Timer(); // fallback
+      // --- 2) Initialiser le player Vimeo et ne lancer le pré-compte que quand la vidéo joue ---
+      if (window.Vimeo && typeof Vimeo.Player === "function") {
+        try {
+          pushVimeoPlayer = new Vimeo.Player(iframe);
+
+          pushVimeoPlayer.setLoop(true);
+          pushVimeoPlayer.setMuted(true);
+
+          // Dès que la vidéo commence à jouer (premier "play") → lancer les 5s
+          pushVimeoPlayer.on("play", () => {
+            startPreCountdown();
+          });
+
+          // On prépare le player (sans démarrer de nous-mêmes, l'utilisateur doit cliquer Lecture)
+          pushVimeoPlayer.ready().then(() => {
+            pushVimeoPlayer.setCurrentTime(0);
+          }).catch(err => {
+            console.warn("Erreur Vimeo ready :", err);
+          });
+
+        } catch (e) {
+          console.warn("Erreur Vimeo Player :", e);
+          // fallback : lancer quand même le pré-compte
+          startPreCountdown();
+        }
+      } else {
+        console.warn("API Vimeo non disponible, démarrage du pré-compte sans synchro vidéo.");
+        startPreCountdown();
+      }
     }
-  } else {
-    console.warn("API Vimeo non disponible, démarrage du chrono sans synchro vidéo.");
-    startLevel1Timer();
-  }
-}
-
 
     // PWA
     if ("serviceWorker" in navigator) {
