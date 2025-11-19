@@ -391,6 +391,10 @@ button:disabled {
   </style>
 </head>
 
+ <!-- API Vimeo pour contrôler précisément le démarrage de la vidéo -->
+<script src="https://player.vimeo.com/api/player.js"></script>
+ 
+
 <body>
   <!-- Fond gazeux -->
   <div class="background-glow"></div>
@@ -932,15 +936,19 @@ function startPushInitialCountdown() {
       return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
     }
 
- function showPushLevel1Phase() {
+// variable globale pour garder une référence au player Vimeo
+let pushVimeoPlayer = null;
+
+function showPushLevel1Phase() {
+  // 1) On construit l’interface du palier
   pushOverlayContent.innerHTML = `
     <p class="push-phase-text" id="push-phase-text">
-      Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop
+      Palier 1 : Vous avez 1 minute pour faire <b>10 pompes Dead Stop</b>
     </p>
     <div class="push-mini-video-wrapper">
-      <!-- Remplace YYYYYYYY par l'ID Vimeo de la démo Dead Stop -->
       <iframe
-        src="https://player.vimeo.com/video/474104138?autoplay=1&loop=1&muted=1&playsinline=1"
+        id="push-demo-video"
+        src="https://player.vimeo.com/video/123456789?muted=1&playsinline=1"
         allow="autoplay; fullscreen; picture-in-picture"
         allowfullscreen
         title="Démonstration pompes Dead Stop"
@@ -953,47 +961,85 @@ function startPushInitialCountdown() {
     </div>
   `;
 
-  const txtEl   = document.getElementById("push-phase-text");
-  const countEl = document.getElementById("push-level-count");
   const okBtn   = document.getElementById("push-ok-btn");
   const failBtn = document.getElementById("push-fail-btn");
+  const textEl  = document.getElementById("push-phase-text");
 
-  pushTimeLeft = 60;
-  countEl.textContent = formatTime(pushTimeLeft);
+  // 2) On initialise le player Vimeo SUR l’iframe qu’on vient de créer
+  const iframe = document.getElementById("push-demo-video");
+  pushVimeoPlayer = new Vimeo.Player(iframe);
 
+  // Boucle & muet (sinon l’autoplay est souvent bloqué)
+  pushVimeoPlayer.setLoop(true);
+  pushVimeoPlayer.setMuted(true);
+
+  // 3) Quand la vidéo est prête, on lance LA LECTURE + LE CHRONO dans la même fonction
+  pushVimeoPlayer.ready().then(() => {
+    // on s’assure de repartir du début à chaque palier
+    pushVimeoPlayer.setCurrentTime(0).then(() => {
+      pushVimeoPlayer.play();          // démarrage vidéo
+      startPushOneMinuteCountdown();   // démarrage chrono synchronisé
+    });
+  });
+
+  // 4) Gestion des boutons ✅ / ❌ (et on les désactive après clic)
   okBtn.addEventListener("click", () => {
-    if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
-    pushLevel1Validated = true;
+    if (okBtn.disabled || failBtn.disabled) return; // déjà cliqué
     okBtn.disabled = true;
     failBtn.disabled = true;
-    txtEl.textContent = "Reposez-vous ! Le palier suivant arrive...";
+
+    textEl.innerHTML =
+      "✅ <b>Reposez-vous !</b><br>Le palier suivant arrive dans quelques instants...";
+
+    // on laisse le chrono finir + la vidéo tourner (on programmera la suite plus tard)
   });
 
   failBtn.addEventListener("click", () => {
-    if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
-    pushLevel1Validated = false;
+    if (okBtn.disabled || failBtn.disabled) return;
     okBtn.disabled = true;
     failBtn.disabled = true;
-    clearPushInterval();
-    countEl.textContent = "00:00";
-    txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
-  });
 
-  clearPushInterval();
-  pushInterval = setInterval(() => {
-    if (pushTimeLeft <= 0) {
-      clearPushInterval();
-      countEl.textContent = "00:00";
+    // on stoppe la vidéo si tu veux que tout se fige
+    if (pushVimeoPlayer) {
+      pushVimeoPlayer.pause();
+    }
+
+    textEl.innerHTML =
+      "❌ <b>Test terminé.</b><br>Votre Puissance de poussée est de <b>NIVEAU 1</b>.";
+
+    // ici tu pourras plus tard enregistrer le niveau dans le profil
+  });
+}
+
+let pushOneMinuteTimerId = null;
+
+function startPushOneMinuteCountdown() {
+  const countEl = document.getElementById("push-level-count");
+  if (!countEl) return;
+
+  let remaining = 60; // secondes
+
+  // pour afficher 01:00 au démarrage
+  countEl.textContent = "01:00";
+
+  if (pushOneMinuteTimerId) {
+    clearInterval(pushOneMinuteTimerId);
+  }
+
+  pushOneMinuteTimerId = setInterval(() => {
+    remaining--;
+
+    if (remaining < 0) {
+      clearInterval(pushOneMinuteTimerId);
+      pushOneMinuteTimerId = null;
+
+      // ici, fin du palier : 3 bips par exemple, plus tard
       return;
     }
 
-    pushTimeLeft--;
-    countEl.textContent = formatTime(pushTimeLeft);
-
-    // 3 bips finaux sur les 3 dernières secondes
-    if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
-      playBeep();
-    }
+    const mm = String(Math.floor(remaining / 60)).padStart(2, "0");
+    const ss = String(remaining % 60).padStart(2, "0");
+    countEl.textContent = `${mm}:${ss}`;
   }, 1000);
 }
 
