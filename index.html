@@ -390,10 +390,9 @@ button:disabled {
     }
   </style>
 
-   <!-- API Vimeo pour contrôler précisément le démarrage de la vidéo -->
-<script src="https://player.vimeo.com/api/player.js"></script>
+  <script src="https://player.vimeo.com/api/player.js"></script>
+
 </head>
- 
 
 <body>
   <!-- Fond gazeux -->
@@ -495,8 +494,9 @@ button:disabled {
       </p>
 
       <div class="push-video-wrapper">
+        <!-- Remplace XXXXXXXX par l'ID Vimeo de ta vidéo explicative -->
         <iframe
-          src="https://player.vimeo.com/video/717443574"
+          src="https://player.vimeo.com/video/XXXXXXXX"
           allow="autoplay; fullscreen; picture-in-picture"
           allowfullscreen
           title="Puissance de Poussée - Explications"
@@ -870,6 +870,7 @@ async function exitFullscreenLandscape() {
     let pushTimeLeft = 0;
     let pushLevel1Validated = false;
     let audioCtx = null;
+    let pushVimeoPlayer = null; // player Vimeo pour le palier 1
 
     function clearPushInterval() {
       if (pushInterval) {
@@ -935,14 +936,11 @@ function startPushInitialCountdown() {
       return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
     }
 
-// variable globale pour garder une référence au player Vimeo
-let pushVimeoPlayer = null;
-
-function showPushLevel1Phase() {
-  // 1) On construit l’interface du palier
+ function showPushLevel1Phase() {
+  // 1) Construire l'interface du palier
   pushOverlayContent.innerHTML = `
     <p class="push-phase-text" id="push-phase-text">
-      Palier 1 : Vous avez 1 minute pour faire <b>10 pompes Dead Stop</b>
+      Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop
     </p>
     <div class="push-mini-video-wrapper">
       <iframe
@@ -960,86 +958,91 @@ function showPushLevel1Phase() {
     </div>
   `;
 
+  const txtEl   = document.getElementById("push-phase-text");
+  const countEl = document.getElementById("push-level-count");
   const okBtn   = document.getElementById("push-ok-btn");
   const failBtn = document.getElementById("push-fail-btn");
-  const textEl  = document.getElementById("push-phase-text");
 
-  // 2) On initialise le player Vimeo SUR l’iframe qu’on vient de créer
-  const iframe = document.getElementById("push-demo-video");
-  pushVimeoPlayer = new Vimeo.Player(iframe);
+  // --- Fonction locale : démarre vraiment le chrono d'1 minute (UNE seule fois) ---
+  let level1TimerStarted = false;
 
-  // Boucle & muet (sinon l’autoplay est souvent bloqué)
-  pushVimeoPlayer.setLoop(true);
-  pushVimeoPlayer.setMuted(true);
+  function startLevel1Timer() {
+    if (level1TimerStarted) return;    // évite tout double démarrage
+    level1TimerStarted = true;
 
-  // 3) Quand la vidéo est prête, on lance LA LECTURE + LE CHRONO dans la même fonction
-  pushVimeoPlayer.ready().then(() => {
-    // on s’assure de repartir du début à chaque palier
-    pushVimeoPlayer.setCurrentTime(0).then(() => {
-      pushVimeoPlayer.play();          // démarrage vidéo
-      startPushOneMinuteCountdown();   // démarrage chrono synchronisé
-    });
-  });
+    clearPushInterval();
+    pushTimeLeft = 60;
+    countEl.textContent = formatTime(pushTimeLeft);
 
-  // 4) Gestion des boutons ✅ / ❌ (et on les désactive après clic)
+    pushInterval = setInterval(() => {
+      if (pushTimeLeft <= 0) {
+        clearPushInterval();
+        countEl.textContent = "00:00";
+        return;
+      }
+
+      pushTimeLeft--;
+      countEl.textContent = formatTime(pushTimeLeft);
+
+      // 3 bips finaux sur les 3 dernières secondes
+      if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
+        playBeep();
+      }
+    }, 1000);
+  }
+
+  // --- Boutons ✅ / ❌ (désactivés après clic) ---
   okBtn.addEventListener("click", () => {
-    if (okBtn.disabled || failBtn.disabled) return; // déjà cliqué
+    if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
+    pushLevel1Validated = true;
     okBtn.disabled = true;
     failBtn.disabled = true;
-
-    textEl.innerHTML =
-      "✅ <b>Reposez-vous !</b><br>Le palier suivant arrive dans quelques instants...";
-
-    // on laisse le chrono finir + la vidéo tourner (on programmera la suite plus tard)
+    txtEl.textContent = "Reposez-vous ! Le palier suivant arrive...";
   });
 
   failBtn.addEventListener("click", () => {
-    if (okBtn.disabled || failBtn.disabled) return;
+    if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
+    pushLevel1Validated = false;
     okBtn.disabled = true;
     failBtn.disabled = true;
-
-    // on stoppe la vidéo si tu veux que tout se fige
-    if (pushVimeoPlayer) {
-      pushVimeoPlayer.pause();
-    }
-
-    textEl.innerHTML =
-      "❌ <b>Test terminé.</b><br>Votre Puissance de poussée est de <b>NIVEAU 1</b>.";
-
-    // ici tu pourras plus tard enregistrer le niveau dans le profil
+    clearPushInterval();
+    countEl.textContent = "00:00";
+    txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
   });
-}
 
-let pushOneMinuteTimerId = null;
+  // --- 2) Initialiser le player Vimeo et ne lancer le chrono qu'une fois la vidéo en lecture ---
+  const iframe = document.getElementById("push-demo-video");
 
-function startPushOneMinuteCountdown() {
-  const countEl = document.getElementById("push-level-count");
-  if (!countEl) return;
+  if (window.Vimeo && typeof Vimeo.Player === "function") {
+    try {
+      pushVimeoPlayer = new Vimeo.Player(iframe);
 
-  let remaining = 60; // secondes
+      pushVimeoPlayer.setLoop(true);
+      pushVimeoPlayer.setMuted(true);
 
-  // pour afficher 01:00 au démarrage
-  countEl.textContent = "01:00";
+      // Quand la vidéo commence effectivement à jouer → on démarre le chrono
+      pushVimeoPlayer.on("play", () => {
+        startLevel1Timer();
+      });
 
-  if (pushOneMinuteTimerId) {
-    clearInterval(pushOneMinuteTimerId);
-  }
+      // On prépare la vidéo puis on lance la lecture
+      pushVimeoPlayer.ready()
+        .then(() => pushVimeoPlayer.setCurrentTime(0))
+        .then(() => pushVimeoPlayer.play())
+        .catch(err => {
+          console.warn("Lecture Vimeo bloquée ou erreur :", err);
+          // Si la lecture échoue, on lance quand même le chrono pour ne pas bloquer le test
+          startLevel1Timer();
+        });
 
-  pushOneMinuteTimerId = setInterval(() => {
-    remaining--;
-
-    if (remaining < 0) {
-      clearInterval(pushOneMinuteTimerId);
-      pushOneMinuteTimerId = null;
-
-      // ici, fin du palier : 3 bips par exemple, plus tard
-      return;
+    } catch (e) {
+      console.warn("Erreur Vimeo Player :", e);
+      startLevel1Timer(); // fallback
     }
-
-    const mm = String(Math.floor(remaining / 60)).padStart(2, "0");
-    const ss = String(remaining % 60).padStart(2, "0");
-    countEl.textContent = `${mm}:${ss}`;
-  }, 1000);
+  } else {
+    console.warn("API Vimeo non disponible, démarrage du chrono sans synchro vidéo.");
+    startLevel1Timer();
+  }
 }
 
 
