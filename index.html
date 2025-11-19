@@ -23,15 +23,16 @@
     }
 
     /* === Gestion des écrans === */
-    .screen {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      display: none;                 /* caché par défaut */
-      flex-direction: column;
-      align-items: center;
-      padding-top: 5vh;
-    }
+.screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none;                 /* caché par défaut */
+  flex-direction: column;
+  align-items: center;
+  padding-top: 5vh;
+  padding-bottom: 90px;          /* réserve de place pour le bouton Retour */
+}
 
     .screen.active {
       display: flex;                 /* on affiche seulement l’écran actif */
@@ -142,27 +143,34 @@
     }
 
     /* --- Bouton retour : haut gauche pour ne pas gêner sur mobile --- */
-    .back-btn {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: #660000aa;
-      color: #fff;
-      border: 1px solid #ff3333;
-      border-radius: 10px;
-      padding: 0.4rem 0.8rem;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 0 10px #ff000055;
-      transition: all 0.2s ease;
-      width: auto;
-      z-index: 5;
-    }
+.back-btn {
+  position: absolute;
+  bottom: 60px;                  /* bas de l’écran */
+  left: 16px;                    /* coin gauche */
+  background: #660000aa;
+  color: #fff;
+  border: 1px solid #ff3333;
+  border-radius: 10px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 0 10px #ff000055;
+  transition: all 0.2s ease;
+  width: auto;
+  z-index: 5;
+}
 
-    .back-btn:hover {
-      background: #990000;
-      transform: scale(1.05);
-    }
+.back-btn:hover {
+  background: #990000;
+  transform: scale(1.05);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  box-shadow: none;
+}
+    
 
     /* --- Textes secondaires --- */
     .subtitle {
@@ -315,17 +323,25 @@
       display: flex;
     }
 
-    .big-countdown {
-      font-size: 5rem;
-      font-weight: bold;
-      text-shadow: 0 0 25px #ff0000;
-      margin-bottom: 1rem;
-    }
+.big-countdown {
+  font-size: 5.5rem;
+  font-weight: bold;
+  text-shadow: 0 0 30px #ff0000;
+  margin-bottom: 1.2rem;
+}
 
-    .push-phase-text {
-      font-size: 1.1rem;
-      margin-bottom: 0.8rem;
-    }
+
+   .push-phase-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: rgba(255,0,0,0.18);
+  border: 1px solid rgba(255,80,80,0.9);
+  text-shadow: 0 0 8px rgba(0,0,0,0.7);
+}
+
 
     .push-mini-video-wrapper {
       width: 70%;
@@ -340,10 +356,13 @@
       border: 0;
     }
 
-    .push-level-count {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
+.push-level-count {
+  font-size: 2.6rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 20px #ff0000;
+}
+
 
     .push-actions {
       display: flex;
@@ -561,11 +580,13 @@
 
     backEvolutionBtn.addEventListener("click", () => setActiveScreen("niveau"));
 
-    backPushBtn.addEventListener("click", () => {
-      clearPushInterval();
-      document.getElementById("push-overlay").classList.remove("active");
-      setActiveScreen("testroom");
-    });
+backPushBtn.addEventListener("click", () => {
+  clearPushInterval();
+  document.getElementById("push-overlay").classList.remove("active");
+  exitFullscreenLandscape();
+  setActiveScreen("testroom");
+});
+
 
     pushStartBtn.addEventListener("click", () => {
       startPushInitialCountdown();
@@ -799,6 +820,46 @@
       ctx.restore();
     }
 
+
+/* ========= Plein écran + verrouillage paysage ========= */
+async function enterFullscreenLandscape() {
+  const elem = document.documentElement;
+  try {
+    if (elem.requestFullscreen) {
+      await elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    }
+    if (screen.orientation && screen.orientation.lock) {
+      try {
+        await screen.orientation.lock('landscape');
+      } catch (e) {
+        console.warn('Orientation lock non supportée ou refusée.', e);
+      }
+    }
+  } catch (e) {
+    console.warn('Erreur plein écran :', e);
+  }
+}
+
+async function exitFullscreenLandscape() {
+  try {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+    if (screen.orientation && screen.orientation.unlock) {
+      screen.orientation.unlock();
+    }
+  } catch (e) {
+    console.warn('Erreur sortie plein écran :', e);
+  }
+}
+
+    
     /* ========= Test Puissance de Poussée (guidé) ========= */
     const pushOverlay = document.getElementById("push-overlay");
     const pushOverlayContent = document.getElementById("push-overlay-content");
@@ -840,25 +901,30 @@
       }
     }
 
-    function startPushInitialCountdown() {
-      clearPushInterval();
-      pushLevel1Validated = false;
-      pushOverlay.classList.add("active");
-      pushOverlayContent.innerHTML =
-        '<div class="big-countdown" id="push-big-count">5</div>';
-      const countEl = document.getElementById("push-big-count");
-      pushTimeLeft = 5;
+function startPushInitialCountdown() {
+  clearPushInterval();
+  pushLevel1Validated = false;
 
-      pushInterval = setInterval(() => {
-        pushTimeLeft--;
-        if (pushTimeLeft <= 0) {
-          clearPushInterval();
-          showPushLevel1Phase();
-        } else {
-          countEl.textContent = pushTimeLeft;
-        }
-      }, 1000);
+  // Plein écran + paysage pendant le test
+  enterFullscreenLandscape();
+
+  pushOverlay.classList.add("active");
+  pushOverlayContent.innerHTML =
+    '<div class="big-countdown" id="push-big-count">5</div>';
+  const countEl = document.getElementById("push-big-count");
+  pushTimeLeft = 5;
+
+  pushInterval = setInterval(() => {
+    pushTimeLeft--;
+    if (pushTimeLeft <= 0) {
+      clearPushInterval();
+      showPushLevel1Phase();
+    } else {
+      countEl.textContent = pushTimeLeft;
     }
+  }, 1000);
+}
+
 
     function formatTime(sec) {
       const m = Math.floor(sec / 60);
@@ -866,66 +932,71 @@
       return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
     }
 
-    function showPushLevel1Phase() {
-      pushOverlayContent.innerHTML = `
-        <p class="push-phase-text" id="push-phase-text">
-          Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop
-        </p>
-        <div class="push-mini-video-wrapper">
-          <!-- Remplace YYYYYYYY par l'ID Vimeo de la démo Dead Stop -->
-          <iframe
-            src="https://player.vimeo.com/video/YYYYYYYY"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowfullscreen
-            title="Démonstration pompes Dead Stop"
-          ></iframe>
-        </div>
-        <div class="push-level-count" id="push-level-count">01:00</div>
-        <div class="push-actions">
-          <button class="push-ok-btn" id="push-ok-btn">✅ Validé</button>
-          <button class="push-fail-btn" id="push-fail-btn">❌ Non validé</button>
-        </div>
-      `;
+ function showPushLevel1Phase() {
+  pushOverlayContent.innerHTML = `
+    <p class="push-phase-text" id="push-phase-text">
+      Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop
+    </p>
+    <div class="push-mini-video-wrapper">
+      <!-- Remplace YYYYYYYY par l'ID Vimeo de la démo Dead Stop -->
+      <iframe
+        src="https://player.vimeo.com/video/YYYYYYYY"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+        title="Démonstration pompes Dead Stop"
+      ></iframe>
+    </div>
+    <div class="push-level-count" id="push-level-count">01:00</div>
+    <div class="push-actions">
+      <button class="push-ok-btn" id="push-ok-btn">✅ Validé</button>
+      <button class="push-fail-btn" id="push-fail-btn">❌ Non validé</button>
+    </div>
+  `;
 
-      const txtEl   = document.getElementById("push-phase-text");
-      const countEl = document.getElementById("push-level-count");
-      const okBtn   = document.getElementById("push-ok-btn");
-      const failBtn = document.getElementById("push-fail-btn");
+  const txtEl   = document.getElementById("push-phase-text");
+  const countEl = document.getElementById("push-level-count");
+  const okBtn   = document.getElementById("push-ok-btn");
+  const failBtn = document.getElementById("push-fail-btn");
 
-      pushTimeLeft = 60;
-      countEl.textContent = formatTime(pushTimeLeft);
+  pushTimeLeft = 60;
+  countEl.textContent = formatTime(pushTimeLeft);
 
-      okBtn.addEventListener("click", () => {
-        if (!pushLevel1Validated) {
-          pushLevel1Validated = true;
-          txtEl.textContent = "Reposez-vous ! Le palier suivant arrive...";
-        }
-      });
+  okBtn.addEventListener("click", () => {
+    if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
+    pushLevel1Validated = true;
+    okBtn.disabled = true;
+    failBtn.disabled = true;
+    txtEl.textContent = "Reposez-vous ! Le palier suivant arrive...";
+  });
 
-      failBtn.addEventListener("click", () => {
-        pushLevel1Validated = false;
-        clearPushInterval();
-        countEl.textContent = "00:00";
-        txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
-      });
+  failBtn.addEventListener("click", () => {
+    if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
+    pushLevel1Validated = false;
+    okBtn.disabled = true;
+    failBtn.disabled = true;
+    clearPushInterval();
+    countEl.textContent = "00:00";
+    txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
+  });
 
+  clearPushInterval();
+  pushInterval = setInterval(() => {
+    if (pushTimeLeft <= 0) {
       clearPushInterval();
-      pushInterval = setInterval(() => {
-        if (pushTimeLeft <= 0) {
-          clearPushInterval();
-          countEl.textContent = "00:00";
-          return;
-        }
-
-        pushTimeLeft--;
-        countEl.textContent = formatTime(pushTimeLeft);
-
-        // 3 bips finaux si le palier est en cours (validé ou non, mais non interrompu)
-        if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
-          playBeep();
-        }
-      }, 1000);
+      countEl.textContent = "00:00";
+      return;
     }
+
+    pushTimeLeft--;
+    countEl.textContent = formatTime(pushTimeLeft);
+
+    // 3 bips finaux sur les 3 dernières secondes
+    if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
+      playBeep();
+    }
+  }, 1000);
+}
+
 
     // PWA
     if ("serviceWorker" in navigator) {
