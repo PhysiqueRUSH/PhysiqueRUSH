@@ -22,20 +22,20 @@
       overflow: hidden;
     }
 
-.screen {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  display: none;                 /* caché par défaut */
-  flex-direction: column;
-  align-items: center;
-  padding-top: 5vh;
-}
+    /* === Gestion des écrans === */
+    .screen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;                 /* caché par défaut */
+      flex-direction: column;
+      align-items: center;
+      padding-top: 5vh;
+    }
 
-.screen.active {
-  display: flex;                 /* on affiche seulement l’écran actif */
-}
-    
+    .screen.active {
+      display: flex;                 /* on affiche seulement l’écran actif */
+    }
 
     /* --- Logo & titre --- */
     .logo {
@@ -82,44 +82,29 @@
       max-width: 400px;
     }
 
-button {
-  background: linear-gradient(145deg, #330000, #660000);
-  border: 2px solid #ff2b2b;
-  color: #fff;
-  font-size: 1.15rem;
-  font-weight: bold;
-  padding: 1.2rem 0;
-  width: 100%;
-  border-radius: 20px;
-  cursor: pointer;
-  /* halo rouge mais plus léger */
-  box-shadow: 0 0 18px rgba(255,0,0,0.5);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
+    button {
+      background: linear-gradient(145deg, #330000, #660000);
+      border: 2px solid #ff2b2b;
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: bold;
+      padding: 1.2rem 0;
+      width: 100%;
+      border-radius: 20px;
+      cursor: pointer;
+      /* halo rouge mais plus léger */
+      box-shadow: 0 0 18px rgba(255,0,0,0.5);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-button:hover {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 0 24px rgba(255,0,0,0.7);
-}
+    button:hover {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 0 24px rgba(255,0,0,0.7);
+    }
 
-
-    /* Effet rouge doux autour des boutons (SANS animation pour les perfs)
-    button::before {
-      content: "";
-      position: absolute;
-      top: -40%;
-      left: -40%;
-      width: 180%;
-      height: 180%;
-      background: radial-gradient(circle, rgba(255,0,0,0.18) 0%, transparent 70%);
-      filter: blur(45px);
-      z-index: -1;
-      opacity: 0.7;
-    } */
-
-    /* --- Fond gazeux global (halo rouge statique, pas d'animation) --- */
+    /* --- Fond gazeux global (halo rouge statique) --- */
     .background-glow, .background-glow2 {
       position: absolute;
       width: 600px;
@@ -156,11 +141,11 @@ button:hover {
       font-weight: bold;
     }
 
-    /* --- Bouton retour (bas gauche, compact) --- */
+    /* --- Bouton retour : haut gauche pour ne pas gêner sur mobile --- */
     .back-btn {
       position: absolute;
-      bottom: 60px; /* bien séparé du footer */
-      left: 25px;
+      top: 16px;
+      left: 16px;
       background: #660000aa;
       color: #fff;
       border: 1px solid #ff3333;
@@ -278,6 +263,112 @@ button:hover {
       border-radius: 50%;
       box-shadow: 0 0 20px #ff000040;
     }
+
+    /* --- Écran Puissance de Poussée --- */
+    .push-container {
+      margin-top: 0.5rem;
+      width: 90%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      z-index: 2;
+    }
+
+    .push-video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* ratio 16:9 */
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 18px rgba(255,0,0,0.6);
+    }
+
+    .push-video-wrapper iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    .push-start-btn {
+      max-width: 260px;
+      font-size: 1.2rem;
+    }
+
+    /* --- Overlay plein écran pour le test Push --- */
+    .fullscreen-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .fullscreen-overlay.active {
+      display: flex;
+    }
+
+    .big-countdown {
+      font-size: 5rem;
+      font-weight: bold;
+      text-shadow: 0 0 25px #ff0000;
+      margin-bottom: 1rem;
+    }
+
+    .push-phase-text {
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .push-mini-video-wrapper {
+      width: 70%;
+      max-width: 260px;
+      margin-bottom: 0.8rem;
+    }
+
+    .push-mini-video-wrapper iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 12px;
+      border: 0;
+    }
+
+    .push-level-count {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .push-actions {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+      max-width: 320px;
+      justify-content: center;
+    }
+
+    .push-ok-btn,
+    .push-fail-btn {
+      flex: 1;
+      font-size: 1.2rem;
+      padding: 1rem 0;
+    }
+
+    .push-ok-btn {
+      background: linear-gradient(145deg, #006633, #00aa55);
+      border-color: #00ff99;
+    }
+
+    .push-fail-btn {
+      background: linear-gradient(145deg, #660000, #aa0000);
+      border-color: #ff5555;
+    }
   </style>
 </head>
 
@@ -329,23 +420,23 @@ button:hover {
       <!-- Menu des tests -->
       <div class="menu" id="testroom-menu">
         <button class="test-btn" data-test="push">
-          💥 Palier Push<br><span>Puissance de poussée</span>
+          💥 Puissance de Poussée<br><span>Test guidé de puissance</span>
         </button>
         <button class="test-btn" data-test="pull">
-          🛡 Palier Pull<br><span>Endurance du dos</span>
+          🛡 Capacité de Tirage<br><span>Endurance des muscles du dos</span>
         </button>
         <button class="test-btn" data-test="legs">
-          🦵 Palier Legs<br><span>Force des jambes</span>
+          🦵 Résistance des Jambes<br><span>Force & endurance des jambes</span>
         </button>
         <button class="test-btn" data-test="cardio">
-          ❤️ Test Cardio<br><span>Capacité cardiaque</span>
+          ❤️ Potentiel Cardio<br><span>Capacité aérobie globale</span>
         </button>
         <button class="test-btn" data-test="definition">
-          🧱 Définition<br><span>%BF (plus bas = mieux)</span>
+          🧱 Niveau de Définition Musculaire<br><span>%BF (plus bas = mieux)</span>
         </button>
       </div>
 
-      <!-- Formulaire de saisie d'un test -->
+      <!-- Formulaire de saisie d'un test (hors Push guidé) -->
       <div id="test-form" class="test-form">
         <h2 id="test-name">Test</h2>
         <input
@@ -370,6 +461,39 @@ button:hover {
     <footer>powered by <span>PhysiqueRUSH</span> – Massive Impact</footer>
   </section>
 
+  <!-- Écran "Puissance de Poussée" -->
+  <section id="push-screen" class="screen">
+    <img src="icon-512.png" alt="Logo PhysiqueRUSH" class="logo" />
+    <h1>PhysiqueRUSH</h1>
+
+    <div class="push-container">
+      <p class="subtitle">
+        Test guidé de <b>Puissance de Poussée</b>. Regarde d'abord la vidéo, puis lance le compte à rebours.
+      </p>
+
+      <div class="push-video-wrapper">
+        <!-- Remplace XXXXXXXX par l'ID Vimeo de ta vidéo explicative -->
+        <iframe
+          src="https://player.vimeo.com/video/XXXXXXXX"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          title="Puissance de Poussée - Explications"
+        ></iframe>
+      </div>
+
+      <button id="push-start-btn" class="push-start-btn">🚀 Commencer</button>
+    </div>
+
+    <!-- Overlay plein écran pour comptes à rebours + paliers -->
+    <div id="push-overlay" class="fullscreen-overlay">
+      <div id="push-overlay-content"></div>
+    </div>
+
+    <button class="back-btn" id="back-push">⬅ Retour</button>
+
+    <footer>powered by <span>PhysiqueRUSH</span> – Massive Impact</footer>
+  </section>
+
   <!-- Écran "Mon Évolution" -->
   <section id="evolution-screen" class="screen">
     <img src="icon-512.png" alt="Logo PhysiqueRUSH" class="logo" />
@@ -377,7 +501,8 @@ button:hover {
 
     <div class="evolution-container">
       <p class="subtitle">
-        Radar des 5 tests : Push, Pull, Legs, Cardio, Définition (%BF). Chaque axe utilise ton <b>dernier</b> résultat.
+        Radar des 5 tests : Puissance de Poussée, Capacité de Tirage, Résistance des Jambes,
+        Potentiel Cardio, Niveau de Définition Musculaire (%BF). Chaque axe utilise ton <b>dernier</b> résultat.
       </p>
 
       <canvas id="evolution-radar" width="320" height="320"></canvas>
@@ -398,6 +523,7 @@ button:hover {
       main:      document.getElementById("main-screen"),
       niveau:    document.getElementById("niveau-screen"),
       testroom:  document.getElementById("testroom-screen"),
+      push:      document.getElementById("push-screen"),
       evolution: document.getElementById("evolution-screen"),
     };
 
@@ -415,6 +541,8 @@ button:hover {
     const backTestroomBtn  = document.getElementById("back-testroom");
     const evolutionBtn     = document.getElementById("evolution");
     const backEvolutionBtn = document.getElementById("back-evolution");
+    const backPushBtn      = document.getElementById("back-push");
+    const pushStartBtn     = document.getElementById("push-start-btn");
 
     niveauBtn.addEventListener("click", () => setActiveScreen("niveau"));
     backNiveauBtn.addEventListener("click", () => setActiveScreen("main"));
@@ -433,6 +561,16 @@ button:hover {
 
     backEvolutionBtn.addEventListener("click", () => setActiveScreen("niveau"));
 
+    backPushBtn.addEventListener("click", () => {
+      clearPushInterval();
+      document.getElementById("push-overlay").classList.remove("active");
+      setActiveScreen("testroom");
+    });
+
+    pushStartBtn.addEventListener("click", () => {
+      startPushInitialCountdown();
+    });
+
     // Modules pas encore développés
     document.getElementById("training").addEventListener("click", () => {
       alert("Module 'Training Camp' en construction 💥");
@@ -446,9 +584,9 @@ button:hover {
 
     /* ========= Stockage des tests ========= */
     const TEST_KEYS = [
-      { key: "push",       label: "Push" },
-      { key: "pull",       label: "Pull" },
-      { key: "legs",       label: "Legs" },
+      { key: "push",       label: "Puissance" },
+      { key: "pull",       label: "Tirage" },
+      { key: "legs",       label: "Jambes" },
       { key: "cardio",     label: "Cardio" },
       { key: "definition", label: "Définition" } // %BF (plus bas = mieux)
     ];
@@ -474,17 +612,15 @@ button:hover {
     }
 
     // Transforme un %BF (plus bas = mieux) en "score" pour le radar
-    // ≥ 30 %  -> score mini
-    // 8  %    -> score maxi
     function bfToScore(bf) {
       const maxBF = 30; // très gras
       const minBF = 8;  // très sec
       const clamped = Math.max(minBF, Math.min(maxBF, bf));
       const ratio01 = (maxBF - clamped) / (maxBF - minBF); // 30->0, 8->1
-      return ratio01 * 10; // on ramène sur une échelle 0..10
+      return ratio01 * 10; // échelle 0..10
     }
 
-    /* ========= La Test Room ========= */
+    /* ========= La Test Room (formulaire manuel) ========= */
     const testroomMenu    = document.getElementById("testroom-menu");
     const testForm        = document.getElementById("test-form");
     const testNameEl      = document.getElementById("test-name");
@@ -505,24 +641,31 @@ button:hover {
 
     // Ouverture de la saisie d'un test
     document.querySelectorAll(".test-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        currentTestKey = btn.dataset.test;
+      const key = btn.dataset.test;
 
-        // Titre = première ligne du bouton
-        const fullText = btn.textContent.trim();
-        const firstLine = fullText.split("\n")[0];
-        testNameEl.textContent = firstLine;
+      // Cas particulier : Puissance de Poussée -> écran dédié
+      if (key === "push") {
+        btn.addEventListener("click", () => {
+          setActiveScreen("push");
+        });
+      } else {
+        btn.addEventListener("click", () => {
+          currentTestKey = key;
 
-        // Placeholder spécifique pour Définition (%BF)
-        if (currentTestKey === "definition") {
-          testScoreInput.placeholder = "Entre ton %BF (ex : 12.5)";
-        } else {
-          testScoreInput.placeholder = "Entre ton score (reps, paliers, etc.)";
-        }
+          const fullText = btn.textContent.trim();
+          const firstLine = fullText.split("\n")[0];
+          testNameEl.textContent = firstLine;
 
-        testScoreInput.value = "";
-        showTestForm();
-      });
+          if (currentTestKey === "definition") {
+            testScoreInput.placeholder = "Entre ton %BF (ex : 12.5)";
+          } else {
+            testScoreInput.placeholder = "Entre ton score (reps, paliers, etc.)";
+          }
+
+          testScoreInput.value = "";
+          showTestForm();
+        });
+      }
     });
 
     // Enregistrement d'un test
@@ -571,8 +714,7 @@ button:hover {
         if (!v || v <= 0) return 0;
 
         if (t.key === "definition") {
-          // v = %BF → transformé en score "définition"
-          return bfToScore(v);
+          return bfToScore(v);  // %BF -> score inversé
         }
         return v;
       });
@@ -655,6 +797,134 @@ button:hover {
       ctx.stroke();
 
       ctx.restore();
+    }
+
+    /* ========= Test Puissance de Poussée (guidé) ========= */
+    const pushOverlay = document.getElementById("push-overlay");
+    const pushOverlayContent = document.getElementById("push-overlay-content");
+    let pushInterval = null;
+    let pushTimeLeft = 0;
+    let pushLevel1Validated = false;
+    let audioCtx = null;
+
+    function clearPushInterval() {
+      if (pushInterval) {
+        clearInterval(pushInterval);
+        pushInterval = null;
+      }
+    }
+
+    function playBeep() {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!audioCtx) audioCtx = new AC();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.type = "sine";
+        osc.frequency.value = 1000;
+
+        const now = audioCtx.currentTime;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } catch (e) {
+        console.warn("Beep error", e);
+      }
+    }
+
+    function startPushInitialCountdown() {
+      clearPushInterval();
+      pushLevel1Validated = false;
+      pushOverlay.classList.add("active");
+      pushOverlayContent.innerHTML =
+        '<div class="big-countdown" id="push-big-count">5</div>';
+      const countEl = document.getElementById("push-big-count");
+      pushTimeLeft = 5;
+
+      pushInterval = setInterval(() => {
+        pushTimeLeft--;
+        if (pushTimeLeft <= 0) {
+          clearPushInterval();
+          showPushLevel1Phase();
+        } else {
+          countEl.textContent = pushTimeLeft;
+        }
+      }, 1000);
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    function showPushLevel1Phase() {
+      pushOverlayContent.innerHTML = `
+        <p class="push-phase-text" id="push-phase-text">
+          Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop
+        </p>
+        <div class="push-mini-video-wrapper">
+          <!-- Remplace YYYYYYYY par l'ID Vimeo de la démo Dead Stop -->
+          <iframe
+            src="https://player.vimeo.com/video/YYYYYYYY"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+            title="Démonstration pompes Dead Stop"
+          ></iframe>
+        </div>
+        <div class="push-level-count" id="push-level-count">01:00</div>
+        <div class="push-actions">
+          <button class="push-ok-btn" id="push-ok-btn">✅ Validé</button>
+          <button class="push-fail-btn" id="push-fail-btn">❌ Non validé</button>
+        </div>
+      `;
+
+      const txtEl   = document.getElementById("push-phase-text");
+      const countEl = document.getElementById("push-level-count");
+      const okBtn   = document.getElementById("push-ok-btn");
+      const failBtn = document.getElementById("push-fail-btn");
+
+      pushTimeLeft = 60;
+      countEl.textContent = formatTime(pushTimeLeft);
+
+      okBtn.addEventListener("click", () => {
+        if (!pushLevel1Validated) {
+          pushLevel1Validated = true;
+          txtEl.textContent = "Reposez-vous ! Le palier suivant arrive...";
+        }
+      });
+
+      failBtn.addEventListener("click", () => {
+        pushLevel1Validated = false;
+        clearPushInterval();
+        countEl.textContent = "00:00";
+        txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
+      });
+
+      clearPushInterval();
+      pushInterval = setInterval(() => {
+        if (pushTimeLeft <= 0) {
+          clearPushInterval();
+          countEl.textContent = "00:00";
+          return;
+        }
+
+        pushTimeLeft--;
+        countEl.textContent = formatTime(pushTimeLeft);
+
+        // 3 bips finaux si le palier est en cours (validé ou non, mais non interrompu)
+        if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
+          playBeep();
+        }
+      }, 1000);
     }
 
     // PWA
