@@ -307,7 +307,7 @@
     .fullscreen-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,0.92);
+      background: rgba(0,0,0,0.96);
       display: none;
       flex-direction: column;
       align-items: center;
@@ -407,7 +407,7 @@
 
     .push-next-text {
       margin-top: 0.5rem;
-      min-height: 2rem; /* réserve l’espace même vide */
+      min-height: 2rem;
     }
   </style>
 
@@ -513,6 +513,7 @@
       </p>
 
       <div class="push-video-wrapper">
+        <!-- Remplace XXXXXXXX par l'ID Vimeo de ta vidéo explicative -->
         <iframe
           src="https://player.vimeo.com/video/XXXXXXXX"
           allow="autoplay; fullscreen; picture-in-picture"
@@ -610,11 +611,13 @@
       setActiveScreen("testroom");
     });
 
-    // clic sur Commencer = plein écran + overlay directement sur palier 1
+    // clic sur Commencer = plein écran + overlay directement sur Palier 1
     pushStartBtn.addEventListener("click", () => {
+      currentPalier = 1;
+      lastSuccessPalier = 0;
       enterFullscreenLandscape();
       pushOverlay.classList.add("active");
-      showPushLevel1Phase();
+      showPushPalier(currentPalier, true);
     });
 
     // Modules pas encore développés
@@ -657,12 +660,21 @@
       }
     }
 
+    // %BF → score radar (0–10, plus sec = mieux)
     function bfToScore(bf) {
       const maxBF = 30;
       const minBF = 8;
       const clamped = Math.max(minBF, Math.min(maxBF, bf));
       const ratio01 = (maxBF - clamped) / (maxBF - minBF);
       return ratio01 * 10;
+    }
+
+    // Niveau de poussée (1–8) → score radar (0–10)
+    function pushLevelToScore(level) {
+      if (!level || level <= 0) return 0;
+      const maxLevel = 8;
+      const clamped = Math.max(1, Math.min(maxLevel, level));
+      return (clamped / maxLevel) * 10;
     }
 
     /* ========= La Test Room (formulaire manuel) ========= */
@@ -752,7 +764,14 @@
       const values = TEST_KEYS.map(t => {
         const v = rawData[t.key];
         if (!v || v <= 0) return 0;
-        if (t.key === "definition") return bfToScore(v);
+
+        if (t.key === "definition") {
+          return bfToScore(v);
+        }
+        if (t.key === "push") {
+          // on convertit le niveau (1–8) en score radar 0–10
+          return pushLevelToScore(v);
+        }
         return v;
       });
 
@@ -766,6 +785,9 @@
         let txt = "Chaque axe représente ton dernier résultat pour chaque test.";
         if (rawData.definition) {
           txt += " Axe Définition basé sur ton %BF actuel (" + rawData.definition + " %).";
+        }
+        if (rawData.push) {
+          txt += " Axe Puissance basé sur ton niveau de poussée (" + rawData.push + ").";
         }
         legendEl.textContent = txt;
       }
@@ -867,15 +889,18 @@
       }
     }
 
-    /* ========= Test Puissance de Poussée (guidé) ========= */
+    /* ========= Test Puissance de Poussée (guidé, multi-paliers) ========= */
     const pushOverlay = document.getElementById("push-overlay");
     const pushOverlayContent = document.getElementById("push-overlay-content");
+
     let pushInterval = null;       // chrono 1 min
     let pushPreIntervalId = null;  // pré-compte 5 s
     let pushTimeLeft = 0;
-    let pushLevel1Validated = false;
     let audioCtx = null;
     let pushVimeoPlayer = null;
+    let currentPalier = 1;
+    let lastSuccessPalier = 0;
+    const MAX_PALIER = 8;
 
     function clearPushInterval() {
       if (pushInterval) {
@@ -916,10 +941,78 @@
       return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
     }
 
-    function showPushLevel1Phase() {
+    function getRepsForPalier(p) {
+      return 10 + 2 * (p - 1); // 1→10, 2→12, ... , 8→24
+    }
+
+    function getCategoryForPalier(p) {
+      if (p <= 0) return "débutant";
+      if (p === 1 || p === 2) return "débutant";
+      if (p === 3 || p === 4) return "intermédiaire";
+      if (p === 5 || p === 6) return "avancé";
+      if (p === 7 || p === 8) return "expert";
+      return "expert";
+    }
+
+    function finishPushTest(lastPalier) {
+      if (pushPreIntervalId) {
+        clearInterval(pushPreIntervalId);
+        pushPreIntervalId = null;
+      }
+      clearPushInterval();
+
+      if (pushVimeoPlayer && typeof pushVimeoPlayer.pause === "function") {
+        pushVimeoPlayer.pause();
+      }
+
+      const level = lastPalier > 0 ? lastPalier : 0;
+      const cat = getCategoryForPalier(level);
+
+      // 🔥 Sauvegarde automatique du niveau de push dans le stockage
+      const data = loadTestData();
+      data.push = level;
+      saveTestData(data);
+
+      pushOverlayContent.innerHTML = `
+        <div style="
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          width:100%;
+          height:100%;
+        ">
+          <h2 style="
+            font-size:1.6rem;
+            letter-spacing:2px;
+            text-transform:uppercase;
+            color:#ff3333;
+            margin-bottom:1rem;
+            text-shadow:0 0 18px rgba(255,0,0,0.9);
+          ">
+            PhysiqueRUSH
+          </h2>
+          <p style="font-size:1.4rem; margin-bottom:0.5rem;">
+            PUISSANCE DE POUSSÉE :
+          </p>
+          <p style="font-size:2.8rem; font-weight:bold; margin-bottom:0.75rem;">
+            niveau ${level}
+          </p>
+          <p style="font-size:1.2rem; opacity:0.9;">
+            (catégorie <span style="color:#ff5555; text-transform:uppercase;">${cat}</span>)
+          </p>
+        </div>
+      `;
+    }
+
+    function showPushPalier(palier, withPreCountdown) {
+      const reps = getRepsForPalier(palier);
+
       pushOverlayContent.innerHTML = `
         <p class="push-phase-text" id="push-phase-text">
-          Mets la vidéo sur Lecture pour lancer le test...
+          ${withPreCountdown
+            ? "Mets la vidéo sur Lecture pour lancer le test..."
+            : "Palier " + palier + " : Vous avez 1 minute pour faire " + reps + " pompes Dead Stop"}
         </p>
 
         <div class="push-video-row">
@@ -933,13 +1026,17 @@
             ></iframe>
           </div>
           <div class="push-palier-label" id="push-palier-label">
-            Palier 1 = 10 Pompes Dead Stop
+            ${withPreCountdown ? `Palier ${palier} = ${reps} Pompes Dead Stop` : ""}
           </div>
         </div>
 
         <div class="push-count-row">
-          <span class="push-count-label" id="push-count-label">Lancement dans :</span>
-          <div class="push-level-count" id="push-level-count">5</div>
+          <span class="push-count-label" id="push-count-label">
+            ${withPreCountdown ? "Lancement dans :" : ""}
+          </span>
+          <div class="push-level-count" id="push-level-count">
+            ${withPreCountdown ? "5" : "01:00"}
+          </div>
         </div>
 
         <div class="push-actions">
@@ -968,36 +1065,6 @@
       let preStarted = false;
       let mainStarted = false;
 
-      function startPreCountdown() {
-        if (preStarted) return;
-        preStarted = true;
-
-        let preRemaining = 5;
-        countLabel.textContent = "Lancement dans :";
-        countEl.textContent = String(preRemaining);
-
-        pushPreIntervalId = setInterval(() => {
-          preRemaining--;
-          if (preRemaining <= 0) {
-            clearInterval(pushPreIntervalId);
-            pushPreIntervalId = null;
-
-            // la pastille "Palier 1 = 10 Pompes..." disparaît visuellement
-            palierEl.style.visibility = "hidden";
-
-            // plus de texte "Lancement dans :"
-            countLabel.textContent = "";
-
-            // texte principal = consigne de palier
-            txtEl.textContent = "Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop";
-
-            startMainCountdown();
-            return;
-          }
-          countEl.textContent = String(preRemaining);
-        }, 1000);
-      }
-
       function startMainCountdown() {
         if (mainStarted) return;
         mainStarted = true;
@@ -1010,13 +1077,68 @@
           if (pushTimeLeft <= 0) {
             clearPushInterval();
             countEl.textContent = "00:00";
+
+            const palierValide = lastSuccessPalier >= palier;
+
+            if (!palierValide) {
+              finishPushTest(lastSuccessPalier);
+              return;
+            }
+
+            if (palier < MAX_PALIER) {
+              currentPalier = palier + 1;
+              showPushPalier(currentPalier, false);
+            } else {
+              finishPushTest(lastSuccessPalier);
+            }
+
             return;
           }
 
           pushTimeLeft--;
           countEl.textContent = formatTime(pushTimeLeft);
 
-          if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
+          if (pushTimeLeft > 0 && pushTimeLeft <= 5) {
+            playBeep();
+          }
+        }, 1000);
+      }
+
+      function startPreCountdown() {
+        if (!withPreCountdown) {
+          countLabel.textContent = "";
+          startMainCountdown();
+          return;
+        }
+
+        if (preStarted) return;
+        preStarted = true;
+
+        let preRemaining = 5;
+        countLabel.textContent = "Lancement dans :";
+        countEl.textContent = String(preRemaining);
+
+        // bip dès le déclenchement (5)
+        playBeep();
+
+        pushPreIntervalId = setInterval(() => {
+          preRemaining--;
+          if (preRemaining <= 0) {
+            clearInterval(pushPreIntervalId);
+            pushPreIntervalId = null;
+
+            palierEl.style.visibility = "hidden";
+            countLabel.textContent = "";
+            txtEl.textContent =
+              `Palier ${palier} : Vous avez 1 minute pour faire ${reps} pompes Dead Stop`;
+
+            startMainCountdown();
+            return;
+          }
+
+          countEl.textContent = String(preRemaining);
+
+          if (preRemaining > 0 && preRemaining <= 5) {
             playBeep();
           }
         }, 1000);
@@ -1024,18 +1146,27 @@
 
       okBtn.addEventListener("click", () => {
         if (okBtn.disabled || failBtn.disabled) return;
-        pushLevel1Validated = true;
+
+        lastSuccessPalier = palier;
         okBtn.disabled = true;
         failBtn.disabled = true;
 
         txtEl.textContent = "Reposez-vous !";
-        countLabel.textContent = "Prochain Palier dans :";
-        nextTextEl.textContent = "Prépare-toi pour le Palier 2 : 12 Pompes Dead Stop";
+
+        if (palier < MAX_PALIER) {
+          const nextReps = getRepsForPalier(palier + 1);
+          countLabel.textContent = "Prochain Palier dans :";
+          nextTextEl.textContent =
+            `Prépare-toi pour le Palier ${palier + 1} : ${nextReps} Pompes Dead Stop`;
+        } else {
+          countLabel.textContent = "";
+          nextTextEl.textContent = "";
+        }
       });
 
       failBtn.addEventListener("click", () => {
         if (okBtn.disabled || failBtn.disabled) return;
-        pushLevel1Validated = false;
+
         okBtn.disabled = true;
         failBtn.disabled = true;
 
@@ -1045,37 +1176,42 @@
         }
         clearPushInterval();
 
-        countEl.textContent = "00:00";
-        countLabel.textContent = "";
-        palierEl.style.visibility = "hidden";
-        nextTextEl.textContent = "";
-        txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
+        finishPushTest(lastSuccessPalier);
       });
 
+      // Initialisation Vimeo + synchro du pré-compte
       if (window.Vimeo && typeof Vimeo.Player === "function") {
         try {
           pushVimeoPlayer = new Vimeo.Player(iframe);
-
           pushVimeoPlayer.setLoop(true);
           pushVimeoPlayer.setMuted(true);
 
-          // Lancement du pré-compte uniquement quand la vidéo entre en lecture
-          pushVimeoPlayer.on("play", () => {
-            startPreCountdown();
-          });
+          if (withPreCountdown) {
+            pushVimeoPlayer.on("play", () => {
+              startPreCountdown();
+            });
 
-          pushVimeoPlayer.ready().then(() => {
-            pushVimeoPlayer.setCurrentTime(0);
-          }).catch(err => {
-            console.warn("Erreur Vimeo ready :", err);
-            startPreCountdown();
-          });
+            pushVimeoPlayer.ready().then(() => {
+              pushVimeoPlayer.setCurrentTime(0);
+            }).catch(err => {
+              console.warn("Erreur Vimeo ready :", err);
+              startPreCountdown();
+            });
+          } else {
+            pushVimeoPlayer.ready().then(() => {
+              pushVimeoPlayer.play().catch(()=>{});
+              startPreCountdown(); // version sans pré-compte
+            }).catch(err => {
+              console.warn("Erreur Vimeo ready pour palier >1 :", err);
+              startPreCountdown();
+            });
+          }
         } catch (e) {
           console.warn("Erreur Vimeo Player :", e);
           startPreCountdown();
         }
       } else {
-        console.warn("API Vimeo non disponible, pré-compte lancé sans synchro vidéo.");
+        console.warn("API Vimeo non disponible, on démarre sans synchro vidéo.");
         startPreCountdown();
       }
     }
