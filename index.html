@@ -27,15 +27,15 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      display: none;                 /* caché par défaut */
+      display: none;
       flex-direction: column;
       align-items: center;
       padding-top: 5vh;
-      padding-bottom: 90px;          /* réserve de place pour le bouton Retour */
+      padding-bottom: 90px; /* place pour le bouton Retour */
     }
 
     .screen.active {
-      display: flex;                 /* on affiche seulement l’écran actif */
+      display: flex;
     }
 
     /* --- Logo & titre --- */
@@ -147,11 +147,11 @@
       font-weight: bold;
     }
 
-    /* --- Bouton retour : bas gauche --- */
+    /* --- Bouton retour --- */
     .back-btn {
       position: absolute;
-      bottom: 60px;                  /* bas de l’écran */
-      left: 16px;                    /* coin gauche */
+      bottom: 60px;
+      left: 16px;
       background: #660000aa;
       color: #fff;
       border: 1px solid #ff3333;
@@ -285,7 +285,7 @@
     .push-video-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* ratio 16:9 */
+      padding-top: 56.25%;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 0 18px rgba(255,0,0,0.6);
@@ -321,13 +321,6 @@
       display: flex;
     }
 
-    .big-countdown {
-      font-size: 5.5rem;
-      font-weight: bold;
-      text-shadow: 0 0 30px #ff0000;
-      margin-bottom: 1.2rem;
-    }
-
     .push-phase-text {
       font-size: 1.4rem;
       font-weight: bold;
@@ -339,10 +332,19 @@
       text-shadow: 0 0 8px rgba(0,0,0,0.7);
     }
 
+    .push-video-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+      max-width: 480px;
+    }
+
     .push-mini-video-wrapper {
-      width: 70%;
+      width: 60%;
       max-width: 260px;
-      margin-bottom: 0.4rem;
     }
 
     .push-mini-video-wrapper iframe {
@@ -352,11 +354,30 @@
       border: 0;
     }
 
+    .push-palier-label {
+      min-width: 140px;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+
+    .push-count-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .push-count-label {
+      font-size: 1rem;
+    }
+
     .push-level-count {
       font-size: 2.6rem;
       font-weight: bold;
-      margin-bottom: 1rem;
       text-shadow: 0 0 20px #ff0000;
+      min-width: 90px;
+      text-align: center;
     }
 
     .push-actions {
@@ -383,9 +404,14 @@
       background: linear-gradient(145deg, #660000, #aa0000);
       border-color: #ff5555;
     }
+
+    .push-next-text {
+      margin-top: 0.5rem;
+      min-height: 2rem; /* réserve l’espace même vide */
+    }
   </style>
 
-  <!-- API Vimeo pour écouter l’événement "play" -->
+  <!-- API Vimeo -->
   <script src="https://player.vimeo.com/api/player.js"></script>
 </head>
 
@@ -434,7 +460,6 @@
         Choisis un test, entre ton score et valide. Seul le <b>dernier résultat</b> est utilisé pour le radar.
       </p>
 
-      <!-- Menu des tests -->
       <div class="menu" id="testroom-menu">
         <button class="test-btn" data-test="push">
           💥 Puissance de Poussée<br><span>Test guidé de puissance</span>
@@ -453,7 +478,6 @@
         </button>
       </div>
 
-      <!-- Formulaire de saisie d'un test (hors Push guidé) -->
       <div id="test-form" class="test-form">
         <h2 id="test-name">Test</h2>
         <input
@@ -489,7 +513,6 @@
       </p>
 
       <div class="push-video-wrapper">
-        <!-- Mets ici la vidéo EXPLICATIVE si tu veux -->
         <iframe
           src="https://player.vimeo.com/video/XXXXXXXX"
           allow="autoplay; fullscreen; picture-in-picture"
@@ -501,7 +524,6 @@
       <button id="push-start-btn" class="push-start-btn">🚀 Commencer</button>
     </div>
 
-    <!-- Overlay plein écran pour comptes à rebours + paliers -->
     <div id="push-overlay" class="fullscreen-overlay">
       <div id="push-overlay-content"></div>
     </div>
@@ -551,7 +573,6 @@
       }
     }
 
-    // Boutons principaux
     const niveauBtn        = document.getElementById("niveau");
     const backNiveauBtn    = document.getElementById("back-niveau");
     const testroomBtn      = document.getElementById("testroom");
@@ -589,7 +610,7 @@
       setActiveScreen("testroom");
     });
 
-    // Clic sur "Commencer" : plein écran + overlay + écran palier
+    // clic sur Commencer = plein écran + overlay directement sur palier 1
     pushStartBtn.addEventListener("click", () => {
       enterFullscreenLandscape();
       pushOverlay.classList.add("active");
@@ -613,7 +634,7 @@
       { key: "pull",       label: "Tirage" },
       { key: "legs",       label: "Jambes" },
       { key: "cardio",     label: "Cardio" },
-      { key: "definition", label: "Définition" } // %BF (plus bas = mieux)
+      { key: "definition", label: "Définition" }
     ];
     const STORAGE_KEY = "physiqueRushTests";
 
@@ -636,13 +657,12 @@
       }
     }
 
-    // Transforme un %BF (plus bas = mieux) en "score" pour le radar
     function bfToScore(bf) {
-      const maxBF = 30; // très gras
-      const minBF = 8;  // très sec
+      const maxBF = 30;
+      const minBF = 8;
       const clamped = Math.max(minBF, Math.min(maxBF, bf));
-      const ratio01 = (maxBF - clamped) / (maxBF - minBF); // 30->0, 8->1
-      return ratio01 * 10; // échelle 0..10
+      const ratio01 = (maxBF - clamped) / (maxBF - minBF);
+      return ratio01 * 10;
     }
 
     /* ========= La Test Room (formulaire manuel) ========= */
@@ -664,11 +684,9 @@
       testForm.style.display = "flex";
     }
 
-    // Ouverture de la saisie d'un test
     document.querySelectorAll(".test-btn").forEach(btn => {
       const key = btn.dataset.test;
 
-      // Cas particulier : Puissance de Poussée -> écran dédié
       if (key === "push") {
         btn.addEventListener("click", () => {
           setActiveScreen("push");
@@ -693,7 +711,6 @@
       }
     });
 
-    // Enregistrement d'un test
     saveTestBtn.addEventListener("click", () => {
       if (!currentTestKey) return;
 
@@ -714,7 +731,6 @@
       showTestroomMenu();
     });
 
-    // Annuler la saisie
     cancelTestBtn.addEventListener("click", () => {
       currentTestKey = null;
       showTestroomMenu();
@@ -733,14 +749,10 @@
 
       const rawData = loadTestData();
 
-      // Prépare les valeurs pour les 5 axes
       const values = TEST_KEYS.map(t => {
         const v = rawData[t.key];
         if (!v || v <= 0) return 0;
-
-        if (t.key === "definition") {
-          return bfToScore(v);  // %BF -> score inversé
-        }
+        if (t.key === "definition") return bfToScore(v);
         return v;
       });
 
@@ -761,14 +773,11 @@
       const cx = w / 2;
       const cy = h / 2;
       const radius = Math.min(w, h) * 0.35;
-
-      // Échelle max (min 10 pour garder une forme lisible)
       const maxValue = Math.max(10, ...values);
 
       ctx.save();
       ctx.translate(cx, cy);
 
-      // Cercles de fond
       ctx.strokeStyle = "#552222";
       ctx.lineWidth = 1;
       const steps = 4;
@@ -779,7 +788,6 @@
         ctx.stroke();
       }
 
-      // Axes + labels
       const n = TEST_KEYS.length;
       ctx.font = "12px Poppins, Arial";
       ctx.fillStyle = "#ffffff";
@@ -789,13 +797,11 @@
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
 
-        // Axe
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(x, y);
         ctx.stroke();
 
-        // Label un peu au-delà du bord
         const lx = Math.cos(angle) * (radius + 16);
         const ly = Math.sin(angle) * (radius + 16);
         ctx.textAlign = lx > 0 ? "left" : "right";
@@ -803,7 +809,6 @@
         ctx.fillText(t.label, lx, ly);
       });
 
-      // Polygone des valeurs
       ctx.beginPath();
       values.forEach((val, i) => {
         const ratio = val / maxValue;
@@ -824,7 +829,7 @@
       ctx.restore();
     }
 
-    /* ========= Plein écran + verrouillage paysage ========= */
+    /* ========= Plein écran + orientation paysage ========= */
     async function enterFullscreenLandscape() {
       const elem = document.documentElement;
       try {
@@ -865,12 +870,12 @@
     /* ========= Test Puissance de Poussée (guidé) ========= */
     const pushOverlay = document.getElementById("push-overlay");
     const pushOverlayContent = document.getElementById("push-overlay-content");
-    let pushInterval = null;       // chrono principal (1 minute)
-    let pushPreIntervalId = null;  // pré-compte à rebours 5s
+    let pushInterval = null;       // chrono 1 min
+    let pushPreIntervalId = null;  // pré-compte 5 s
     let pushTimeLeft = 0;
     let pushLevel1Validated = false;
     let audioCtx = null;
-    let pushVimeoPlayer = null;    // player Vimeo du palier
+    let pushVimeoPlayer = null;
 
     function clearPushInterval() {
       if (pushInterval) {
@@ -912,51 +917,63 @@
     }
 
     function showPushLevel1Phase() {
-      // 1) Construire l'interface du palier
       pushOverlayContent.innerHTML = `
         <p class="push-phase-text" id="push-phase-text">
           Mets la vidéo sur Lecture pour lancer le test...
         </p>
-        <div class="push-mini-video-wrapper">
-          <iframe
-            id="push-demo-video"
-            src="https://player.vimeo.com/video/474104138?muted=1&playsinline=1"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowfullscreen
-            title="Démonstration pompes Dead Stop"
-          ></iframe>
+
+        <div class="push-video-row">
+          <div class="push-mini-video-wrapper">
+            <iframe
+              id="push-demo-video"
+              src="https://player.vimeo.com/video/474104138?muted=1&playsinline=1"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowfullscreen
+              title="Démonstration pompes Dead Stop"
+            ></iframe>
+          </div>
+          <div class="push-palier-label" id="push-palier-label">
+            Palier 1 = 10 Pompes Dead Stop
+          </div>
         </div>
-        <p class="small-text" id="push-launch-text">Lancement dans :</p>
-        <div class="push-level-count" id="push-level-count">5</div>
+
+        <div class="push-count-row">
+          <span class="push-count-label" id="push-count-label">Lancement dans :</span>
+          <div class="push-level-count" id="push-level-count">5</div>
+        </div>
+
         <div class="push-actions">
           <button class="push-ok-btn" id="push-ok-btn">✅ Validé</button>
           <button class="push-fail-btn" id="push-fail-btn">❌ Non validé</button>
         </div>
+
+        <p class="small-text push-next-text" id="push-next-palier-text"></p>
       `;
 
       const txtEl       = document.getElementById("push-phase-text");
-      const launchText  = document.getElementById("push-launch-text");
+      const palierEl    = document.getElementById("push-palier-label");
+      const countLabel  = document.getElementById("push-count-label");
       const countEl     = document.getElementById("push-level-count");
       const okBtn       = document.getElementById("push-ok-btn");
       const failBtn     = document.getElementById("push-fail-btn");
+      const nextTextEl  = document.getElementById("push-next-palier-text");
       const iframe      = document.getElementById("push-demo-video");
 
-      // Reset timers
       if (pushPreIntervalId) {
         clearInterval(pushPreIntervalId);
         pushPreIntervalId = null;
       }
       clearPushInterval();
 
-      let preStarted = false;   // pour ne démarrer que 1x le pré-compte
-      let mainStarted = false;  // pour ne démarrer que 1x le chrono principal
+      let preStarted = false;
+      let mainStarted = false;
 
-      // --- fonctions internes ---
       function startPreCountdown() {
         if (preStarted) return;
         preStarted = true;
 
         let preRemaining = 5;
+        countLabel.textContent = "Lancement dans :";
         countEl.textContent = String(preRemaining);
 
         pushPreIntervalId = setInterval(() => {
@@ -964,11 +981,16 @@
           if (preRemaining <= 0) {
             clearInterval(pushPreIntervalId);
             pushPreIntervalId = null;
-            // On enlève le texte "Lancement dans :" et on passe au palier 1
-            if (launchText) {
-              launchText.textContent = "";
-            }
+
+            // la pastille "Palier 1 = 10 Pompes..." disparaît visuellement
+            palierEl.style.visibility = "hidden";
+
+            // plus de texte "Lancement dans :"
+            countLabel.textContent = "";
+
+            // texte principal = consigne de palier
             txtEl.textContent = "Palier 1 : Vous avez 1 minute pour faire 10 pompes Dead Stop";
+
             startMainCountdown();
             return;
           }
@@ -994,37 +1016,42 @@
           pushTimeLeft--;
           countEl.textContent = formatTime(pushTimeLeft);
 
-          // 3 bips finaux sur les 3 dernières secondes
           if (pushTimeLeft > 0 && pushTimeLeft <= 3) {
             playBeep();
           }
         }, 1000);
       }
 
-      // --- Boutons ✅ / ❌ (désactivés après clic) ---
       okBtn.addEventListener("click", () => {
-        if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
+        if (okBtn.disabled || failBtn.disabled) return;
         pushLevel1Validated = true;
         okBtn.disabled = true;
         failBtn.disabled = true;
-        txtEl.textContent = "Reposez-vous ! Le palier suivant arrive...";
+
+        txtEl.textContent = "Reposez-vous !";
+        countLabel.textContent = "Prochain Palier dans :";
+        nextTextEl.textContent = "Prépare-toi pour le Palier 2 : 12 Pompes Dead Stop";
       });
 
       failBtn.addEventListener("click", () => {
-        if (okBtn.disabled || failBtn.disabled) return;  // déjà traité
+        if (okBtn.disabled || failBtn.disabled) return;
         pushLevel1Validated = false;
         okBtn.disabled = true;
         failBtn.disabled = true;
+
         if (pushPreIntervalId) {
           clearInterval(pushPreIntervalId);
           pushPreIntervalId = null;
         }
         clearPushInterval();
+
         countEl.textContent = "00:00";
+        countLabel.textContent = "";
+        palierEl.style.visibility = "hidden";
+        nextTextEl.textContent = "";
         txtEl.textContent = "Votre Puissance de poussée est de NIVEAU 1";
       });
 
-      // --- 2) Initialiser le player Vimeo et ne lancer le pré-compte que quand la vidéo joue ---
       if (window.Vimeo && typeof Vimeo.Player === "function") {
         try {
           pushVimeoPlayer = new Vimeo.Player(iframe);
@@ -1032,25 +1059,23 @@
           pushVimeoPlayer.setLoop(true);
           pushVimeoPlayer.setMuted(true);
 
-          // Dès que la vidéo commence à jouer (premier "play") → lancer les 5s
+          // Lancement du pré-compte uniquement quand la vidéo entre en lecture
           pushVimeoPlayer.on("play", () => {
             startPreCountdown();
           });
 
-          // On prépare le player (sans démarrer de nous-mêmes, l'utilisateur doit cliquer Lecture)
           pushVimeoPlayer.ready().then(() => {
             pushVimeoPlayer.setCurrentTime(0);
           }).catch(err => {
             console.warn("Erreur Vimeo ready :", err);
+            startPreCountdown();
           });
-
         } catch (e) {
           console.warn("Erreur Vimeo Player :", e);
-          // fallback : lancer quand même le pré-compte
           startPreCountdown();
         }
       } else {
-        console.warn("API Vimeo non disponible, démarrage du pré-compte sans synchro vidéo.");
+        console.warn("API Vimeo non disponible, pré-compte lancé sans synchro vidéo.");
         startPreCountdown();
       }
     }
